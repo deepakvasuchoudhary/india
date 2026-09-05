@@ -1,0 +1,445 @@
+<!DOCTYPE html>
+<html lang="en" class="scroll-smooth">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>India's Colonial Past (1498 – 1961): Complete Chronology, Wars, Treaties, Famines & Maps</title>
+  <meta name="description" content="An exhaustive interactive scrollytelling map and historical chronicle of European colonial rule in India, from Vasco da Gama in 1498 to the liberation of Goa in 1961.">
+
+  <!-- Tailwind CSS CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            imperial: {
+              red: '#991b1b',
+              gold: '#d97706',
+              amber: '#f59e0b',
+              stone: '#1c1917',
+              dark: '#0c0a09'
+            }
+          }
+        }
+      }
+    }
+  </script>
+
+  <!-- Leaflet CSS & JS -->
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin=""/>
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
+
+  <!-- Custom CSS -->
+  <link rel="stylesheet" href="css/styles.css">
+</head>
+
+<body class="bg-stone-950 text-stone-200 parchment-pattern antialiased selection:bg-amber-600 selection:text-stone-950 min-h-screen">
+
+  <!-- Top Announcement / Audio Bar -->
+  <header class="w-full border-b border-amber-900/40 bg-stone-950/90 backdrop-blur-md sticky top-0 z-40">
+    <div class="max-w-7xl mx-auto px-4 py-2.5 flex flex-wrap items-center justify-between gap-3">
+      <div class="flex items-center gap-3">
+        <span class="w-2.5 h-2.5 rounded-full bg-amber-500 animate-ping"></span>
+        <span class="font-serif font-black tracking-widest text-xs md:text-sm text-amber-400 uppercase">
+          CHRONICA IMPERII INDICI
+        </span>
+        <span class="hidden sm:inline text-stone-600">|</span>
+        <span class="hidden sm:inline text-xs font-serif text-stone-300">
+          The 451-Year Colonial Arc (1498 – 1961)
+        </span>
+      </div>
+
+      <!-- Quick Action Toolbar -->
+      <div class="flex items-center flex-wrap gap-2">
+        <!-- Guided Tour Toggle -->
+        <button id="tour-toggle-btn" onclick="window.app.toggleTour()" class="flex items-center gap-1.5 px-3 py-1 rounded bg-stone-900 hover:bg-amber-950 text-amber-200 text-xs font-medium border border-stone-700 hover:border-amber-600 transition-colors shadow-sm cursor-pointer">
+          <svg class="w-3.5 h-3.5 text-amber-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14.752 11.168l-3.197-2.132A1 1 0 0010 9.87v4.263a1 1 0 001.555.832l3.197-2.132a1 1 0 000-1.664z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+          <span>Auto-Play Tour</span>
+        </button>
+
+        <!-- Ambient Sound Toggle -->
+        <button id="sound-toggle-btn" class="flex items-center gap-1.5 px-3 py-1 rounded bg-stone-900 hover:bg-stone-800 text-stone-300 text-xs font-medium border border-stone-700 transition-colors cursor-pointer">
+          <svg class="w-3.5 h-3.5 text-stone-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5.586 15H4a1 1 0 01-1-1v-4a1 1 0 011-1h1.586l4.707-4.707C10.923 3.663 12 4.109 12 5v14c0 .891-1.077 1.337-1.707.707L5.586 15zM17 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2"/></svg>
+          <span>Audio: Muted</span>
+        </button>
+      </div>
+    </div>
+
+    <!-- Guided Tour Progress Bar Indicator -->
+    <div class="w-full bg-stone-900 h-0.5">
+      <div id="tour-progress-bar" class="bg-amber-500 h-0.5 transition-all duration-500 w-0"></div>
+    </div>
+  </header>
+
+  <!-- Hero Section -->
+  <section class="max-w-7xl mx-auto px-4 pt-10 pb-8 text-center relative">
+    <div class="inline-block px-3 py-1 rounded-full bg-red-950/80 border border-red-800 text-red-300 text-xs font-serif uppercase tracking-widest mb-4">
+      An Exhaustive Historical Cartography
+    </div>
+    <h1 class="text-3xl sm:text-5xl lg:text-6xl font-serif font-black tracking-tight text-stone-100 max-w-5xl mx-auto leading-tight sm:leading-none">
+      India’s Colonial Past <br class="hidden sm:inline">
+      <span class="text-transparent bg-clip-text bg-gradient-to-r from-amber-400 via-amber-200 to-amber-500">
+        From Start to End (1498 – 1961)
+      </span>
+    </h1>
+    <p class="mt-4 text-stone-300 text-sm sm:text-base max-w-3xl mx-auto font-serif italic leading-relaxed">
+      From the moment Vasco da Gama dropped anchor in Calicut to the armed liberation of Goa: every war, treaty, famine, uprising, king, queen, and freedom fighter mapped in synchronized scrollytelling.
+    </p>
+
+    <!-- Imperial Statistics Dashboard -->
+    <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-3 mt-8 max-w-6xl mx-auto text-left">
+      <div class="p-3.5 rounded-lg bg-stone-900/80 border border-stone-800">
+        <span class="text-[11px] uppercase font-bold text-stone-400 tracking-wider block">Duration</span>
+        <span class="text-2xl font-serif font-bold text-amber-300">451 Years</span>
+        <span class="text-[10px] text-stone-500 block">1498 (Calicut) to 1961 (Goa)</span>
+      </div>
+      <div class="p-3.5 rounded-lg bg-stone-900/80 border border-stone-800">
+        <span class="text-[11px] uppercase font-bold text-stone-400 tracking-wider block">Events Mapped</span>
+        <span class="text-2xl font-serif font-bold text-amber-300">63 Sites</span>
+        <span class="text-[10px] text-stone-500 block">With GPS coordinates</span>
+      </div>
+      <div class="p-3.5 rounded-lg bg-stone-900/80 border border-stone-800">
+        <span class="text-[11px] uppercase font-bold text-stone-400 tracking-wider block">Major Wars</span>
+        <span class="text-2xl font-serif font-bold text-red-400">16 Wars</span>
+        <span class="text-[10px] text-stone-500 block">50+ Pitched Engagements</span>
+      </div>
+      <div class="p-3.5 rounded-lg bg-stone-900/80 border border-stone-800">
+        <span class="text-[11px] uppercase font-bold text-stone-400 tracking-wider block">Imperial Treaties</span>
+        <span class="text-2xl font-serif font-bold text-amber-400">13 Pacts</span>
+        <span class="text-[10px] text-stone-500 block">Treaty of Allahabad to 1947</span>
+      </div>
+      <div class="p-3.5 rounded-lg bg-stone-900/80 border border-stone-800">
+        <span class="text-[11px] uppercase font-bold text-stone-400 tracking-wider block">Famine Deaths</span>
+        <span class="text-2xl font-serif font-bold text-orange-400">35M+ Dead</span>
+        <span class="text-[10px] text-stone-500 block">10 Great Colonial Famines</span>
+      </div>
+      <div class="p-3.5 rounded-lg bg-stone-900/80 border border-stone-800">
+        <span class="text-[11px] uppercase font-bold text-stone-400 tracking-wider block">Economic Drain</span>
+        <span class="text-2xl font-serif font-bold text-emerald-400">$45 Trillion</span>
+        <span class="text-[10px] text-stone-500 block">27% down to &lt;3% World GDP</span>
+      </div>
+    </div>
+
+    <!-- Deep-Dive Modal Action Buttons -->
+    <div class="flex flex-wrap items-center justify-center gap-2.5 mt-6">
+      <button onclick="window.app.openModal('wars-modal')" class="px-3.5 py-1.5 rounded-lg bg-red-950/70 hover:bg-red-900 text-red-200 border border-red-800 text-xs font-medium transition-all shadow cursor-pointer flex items-center gap-1.5">
+        <span>⚔️</span> <span>Wars & Battles Dossier (16)</span>
+      </button>
+      <button onclick="window.app.openModal('treaties-modal')" class="px-3.5 py-1.5 rounded-lg bg-amber-950/70 hover:bg-amber-900 text-amber-200 border border-amber-800 text-xs font-medium transition-all shadow cursor-pointer flex items-center gap-1.5">
+        <span>📜</span> <span>Historic Treaties Archive (13)</span>
+      </button>
+      <button onclick="window.app.openModal('famines-modal')" class="px-3.5 py-1.5 rounded-lg bg-stone-900 hover:bg-stone-800 text-orange-300 border border-orange-900 text-xs font-medium transition-all shadow cursor-pointer flex items-center gap-1.5">
+        <span>🌾</span> <span>The Great Famines Register (10)</span>
+      </button>
+      <button onclick="window.app.openModal('personae-modal')" class="px-3.5 py-1.5 rounded-lg bg-purple-950/70 hover:bg-purple-900 text-purple-200 border border-purple-800 text-xs font-medium transition-all shadow cursor-pointer flex items-center gap-1.5">
+        <span>👑</span> <span>Dramatis Personae: Kings & Leaders (43)</span>
+      </button>
+      <button onclick="window.app.openModal('drain-modal')" class="px-3.5 py-1.5 rounded-lg bg-emerald-950/70 hover:bg-emerald-900 text-emerald-200 border border-emerald-800 text-xs font-medium transition-all shadow cursor-pointer flex items-center gap-1.5">
+        <span>💰</span> <span>The $45T Drain of Wealth</span>
+      </button>
+    </div>
+  </section>
+
+  <!-- Sticky Era Navigation Ribbon & Filter Bar -->
+  <nav class="sticky top-[45px] z-30 bg-stone-950/95 backdrop-blur-md border-y border-stone-800 py-3 shadow-lg">
+    <div class="max-w-7xl mx-auto px-4 flex flex-col gap-3">
+      <!-- Chapter Jump Buttons -->
+      <div id="era-nav-pills" class="flex items-center gap-2 overflow-x-auto pb-1 scrollbar-thin">
+        <!-- Injected dynamically by app.js -->
+      </div>
+
+      <!-- Filters and Search Bar -->
+      <div class="flex flex-wrap items-center justify-between gap-3 pt-1 border-t border-stone-800/80">
+        <!-- Category Filter Pills -->
+        <div class="flex items-center gap-1.5 overflow-x-auto pb-1 text-xs">
+          <span class="text-[11px] font-bold uppercase text-stone-500 mr-1">Filter:</span>
+          <button onclick="window.app.setFilter('all')" data-cat="all" class="filter-pill-btn px-2.5 py-1 rounded bg-amber-600 text-stone-950 font-bold border border-amber-500 transition-all cursor-pointer">
+            All Events
+          </button>
+          <button onclick="window.app.setFilter('battle')" data-cat="battle" class="filter-pill-btn px-2.5 py-1 rounded bg-stone-900 hover:bg-red-950 text-stone-300 border border-stone-800 transition-all cursor-pointer">
+            ⚔️ Battles & Wars
+          </button>
+          <button onclick="window.app.setFilter('treaty')" data-cat="treaty" class="filter-pill-btn px-2.5 py-1 rounded bg-stone-900 hover:bg-amber-950 text-stone-300 border border-stone-800 transition-all cursor-pointer">
+            📜 Treaties
+          </button>
+          <button onclick="window.app.setFilter('famine')" data-cat="famine" class="filter-pill-btn px-2.5 py-1 rounded bg-stone-900 hover:bg-orange-950 text-stone-300 border border-stone-800 transition-all cursor-pointer">
+            🌾 Famines & Tragedies
+          </button>
+          <button onclick="window.app.setFilter('rebellion')" data-cat="rebellion" class="filter-pill-btn px-2.5 py-1 rounded bg-stone-900 hover:bg-orange-950 text-stone-300 border border-stone-800 transition-all cursor-pointer">
+            🔥 Rebellions
+          </button>
+          <button onclick="window.app.setFilter('freedom')" data-cat="freedom" class="filter-pill-btn px-2.5 py-1 rounded bg-stone-900 hover:bg-amber-950 text-stone-300 border border-stone-800 transition-all cursor-pointer">
+            🇮🇳 Freedom Struggle
+          </button>
+          <button onclick="window.app.setFilter('independence')" data-cat="independence" class="filter-pill-btn px-2.5 py-1 rounded bg-stone-900 hover:bg-emerald-950 text-stone-300 border border-stone-800 transition-all cursor-pointer">
+            🕊️ Liberation
+          </button>
+        </div>
+
+        <!-- Real-Time Search Box -->
+        <div class="relative w-full sm:w-64">
+          <input type="text" id="search-input" placeholder="Search king, battle, treaty, famine..." class="w-full bg-stone-900 text-stone-200 placeholder-stone-500 text-xs px-3 py-1.5 pl-8 rounded-lg border border-stone-700 focus:outline-none focus:border-amber-500 focus:ring-1 focus:ring-amber-500 transition-all">
+          <svg class="w-4 h-4 text-stone-500 absolute left-2.5 top-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/></svg>
+        </div>
+      </div>
+    </div>
+  </nav>
+
+  <!-- Main Scrollytelling Two-Column Split Layout -->
+  <main class="max-w-7xl mx-auto px-4 py-8">
+    <div class="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start relative">
+
+      <!-- LEFT COLUMN: Narrative Stream (Scrolls down, updates map) -->
+      <section class="lg:col-span-6 xl:col-span-6 order-2 lg:order-1">
+        <div class="mb-4 flex items-center justify-between text-xs text-stone-400">
+          <span>Scroll down to navigate through time:</span>
+          <span class="font-mono text-amber-400">Chronological 1498 ➔ 1961</span>
+        </div>
+
+        <div id="timeline-cards-container">
+          <!-- 63 Detailed Historical Event Cards rendered dynamically by app.js -->
+        </div>
+      </section>
+
+      <!-- RIGHT COLUMN: Sticky Interactive Map Viewport -->
+      <section id="map-viewport-section" class="lg:col-span-6 xl:col-span-6 order-1 lg:order-2 lg:sticky lg:top-[160px]">
+        <div class="rounded-xl overflow-hidden border border-amber-800/40 shadow-2xl bg-stone-900 relative flex flex-col">
+
+          <!-- Map Controls Header -->
+          <div class="p-3 bg-stone-950/95 border-b border-stone-800 flex flex-wrap items-center justify-between gap-2 z-10 relative">
+            <!-- Map Theme Selector -->
+            <div class="flex items-center gap-1.5 text-xs">
+              <span class="text-stone-400 text-[11px] uppercase font-bold">Theme:</span>
+              <button id="tile-btn-sepia" onclick="window.historicalMap.setBaseTile('sepia')" class="map-theme-btn px-2.5 py-1 rounded bg-amber-950 text-amber-200 border border-amber-700 text-xs font-medium cursor-pointer transition-colors">
+                Sepia
+              </button>
+              <button id="tile-btn-dark" onclick="window.historicalMap.setBaseTile('dark')" class="map-theme-btn px-2.5 py-1 rounded bg-stone-900 text-stone-400 border border-stone-800 text-xs font-medium cursor-pointer hover:text-stone-200 transition-colors">
+                Dark
+              </button>
+              <button id="tile-btn-satellite" onclick="window.historicalMap.setBaseTile('satellite')" class="map-theme-btn px-2.5 py-1 rounded bg-stone-900 text-stone-400 border border-stone-800 text-xs font-medium cursor-pointer hover:text-stone-200 transition-colors">
+                Satellite
+              </button>
+            </div>
+
+            <!-- Reset Subcontinent View -->
+            <button onclick="window.historicalMap.resetSubcontinentView()" class="text-xs text-amber-400 hover:text-amber-200 flex items-center gap-1 cursor-pointer bg-stone-900/80 hover:bg-stone-800 px-2.5 py-1 rounded border border-stone-800 transition-colors">
+              <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"/></svg>
+              <span>Reset View</span>
+            </button>
+          </div>
+
+          <!-- Historical Territory Overlays Selector -->
+          <div class="px-3 py-2 bg-stone-950/80 border-b border-stone-800 flex items-center gap-1.5 overflow-x-auto text-[11px] scrollbar-thin">
+            <span class="text-stone-400 shrink-0 font-bold uppercase text-[10px]">Territories:</span>
+            <button onclick="window.historicalMap.showEraTerritories(1700)" data-year="1700" class="era-layer-btn px-2.5 py-0.5 rounded bg-stone-900/90 text-stone-300 border border-stone-700 hover:border-amber-600 transition-colors shrink-0 cursor-pointer">
+              1700 Mughal
+            </button>
+            <button onclick="window.historicalMap.showEraTerritories(1765)" data-year="1765" class="era-layer-btn px-2.5 py-0.5 rounded bg-stone-900/90 text-stone-300 border border-stone-700 hover:border-amber-600 transition-colors shrink-0 cursor-pointer">
+              1765 Diwani
+            </button>
+            <button onclick="window.historicalMap.showEraTerritories(1805)" data-year="1805" class="era-layer-btn px-2.5 py-0.5 rounded bg-stone-900/90 text-stone-300 border border-stone-700 hover:border-amber-600 transition-colors shrink-0 cursor-pointer">
+              1805 Wellesley
+            </button>
+            <button onclick="window.historicalMap.showEraTerritories(1857)" data-year="1857" class="era-layer-btn px-2.5 py-0.5 rounded bg-stone-900/90 text-stone-300 border border-stone-700 hover:border-amber-600 transition-colors shrink-0 cursor-pointer">
+              1857 Eve of Revolt
+            </button>
+            <button onclick="window.historicalMap.showEraTerritories(1947)" data-year="1947" class="era-layer-btn px-2.5 py-0.5 rounded bg-stone-900/90 text-stone-300 border border-stone-700 hover:border-amber-600 transition-colors shrink-0 cursor-pointer">
+              1947 Partition
+            </button>
+            <button onclick="window.historicalMap.showEraTerritories(1961)" data-year="1961" class="era-layer-btn px-2.5 py-0.5 rounded bg-stone-900/90 text-stone-300 border border-stone-700 hover:border-amber-600 transition-colors shrink-0 cursor-pointer">
+              1961 Goa
+            </button>
+          </div>
+
+          <!-- MAP VIEWPORT WRAPPER (HOUSES THE LEAFLET MAP & THE COORDINATES HUD) -->
+          <div class="relative w-full overflow-hidden bg-stone-950 flex-grow" style="min-height: 480px;">
+            <!-- The Leaflet Map Canvas Container -->
+            <div id="historical-map" class="w-full relative z-0 map-sepia-theme"></div>
+
+            <!-- Active Event Radar / Heads-Up-Display (HUD) Overlay with Coordinates -->
+            <div id="map-hud-box" class="map-hud-overlay absolute bottom-3 left-3 right-3 p-3 rounded-xl z-20 pointer-events-none transition-all shadow-2xl border border-amber-600/40">
+              <!-- Top Line: Era Badge, Year, and Prominent Coordinates Readout -->
+              <div class="flex items-center justify-between gap-2 border-b border-stone-700/60 pb-1.5 mb-1.5">
+                <div class="flex items-center gap-2">
+                  <span id="hud-era" class="text-[10px] font-bold uppercase tracking-widest px-2 py-0.5 rounded bg-amber-950 text-amber-300 border border-amber-700">
+                    Era 1
+                  </span>
+                  <span id="hud-year" class="font-serif font-black text-amber-400 text-sm">
+                    1498
+                  </span>
+                </div>
+
+                <!-- Coordinates Section Badge -->
+                <div class="flex items-center gap-1.5 font-mono text-[11px] text-amber-300 bg-stone-950/90 px-2.5 py-0.5 rounded-md border border-amber-800/60 shadow-inner">
+                  <span class="w-2 h-2 rounded-full bg-amber-500 animate-pulse"></span>
+                  <span class="text-stone-400 font-sans text-[10px] uppercase font-bold tracking-wider">GPS:</span>
+                  <span id="hud-coords" class="tracking-wide font-bold text-amber-300">11.385° N, 75.718° E</span>
+                </div>
+              </div>
+
+              <!-- Title, Location and Crosshair Coordinates -->
+              <div class="space-y-0.5">
+                <h4 id="hud-title" class="font-serif font-bold text-sm lg:text-base text-stone-100 truncate">
+                  Vasco da Gama Lands at Calicut
+                </h4>
+                <div class="flex items-center justify-between gap-2 text-xs">
+                  <p id="hud-location" class="text-amber-300/80 font-serif italic truncate flex items-center gap-1">
+                    <svg class="w-3.5 h-3.5 text-amber-500 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"/></svg>
+                    <span>Kappad Beach, Calicut (Kozhikode), Kerala</span>
+                  </p>
+                  <span class="hidden sm:inline-flex items-center gap-1 text-[10px] font-mono text-stone-400 shrink-0">
+                    <span class="text-stone-500">Cursor:</span>
+                    <span id="hud-live-coords">22.500° N, 78.900° E</span>
+                  </span>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Map Marker Legend Footer -->
+          <div class="p-2.5 bg-stone-950 border-t border-stone-800 text-[11px] flex flex-wrap items-center justify-center gap-3 text-stone-400 z-10">
+            <span class="flex items-center gap-1"><span class="w-2.5 h-2.5 rounded-full bg-red-600"></span> Battles</span>
+            <span class="flex items-center gap-1"><span class="w-2.5 h-2.5 rounded-full bg-amber-600"></span> Treaties</span>
+            <span class="flex items-center gap-1"><span class="w-2.5 h-2.5 rounded-full bg-amber-950 border border-amber-500"></span> Famines</span>
+            <span class="flex items-center gap-1"><span class="w-2.5 h-2.5 rounded-full bg-orange-600"></span> Rebellions</span>
+            <span class="flex items-center gap-1"><span class="w-2.5 h-2.5 rounded-full bg-blue-600"></span> Maritime/Trade</span>
+            <span class="flex items-center gap-1"><span class="w-2.5 h-2.5 rounded-full bg-emerald-600"></span> Independence</span>
+          </div>
+
+        </div>
+      </section>
+
+    </div>
+  </main>
+
+  <!-- Footer Section -->
+  <footer class="mt-20 border-t border-stone-800 bg-stone-950 py-12 text-center text-xs text-stone-400">
+    <div class="max-w-4xl mx-auto px-4 space-y-3">
+      <p class="font-serif text-amber-400 text-sm font-bold">
+        Chronica Imperii Indici • 1498 – 1961
+      </p>
+      <p class="max-w-2xl mx-auto leading-relaxed">
+        An interactive educational historical project chronicling the European colonial conquest, resistance, famines, treaties, and ultimate liberation of the Indian subcontinent.
+      </p>
+      <p class="text-stone-500 text-[11px]">
+        Built with Leaflet.js, OpenStreetMap, CartoDB, Tailwind CSS, and Web Audio API.
+      </p>
+    </div>
+  </footer>
+
+  <!-- ==================== MODALS ==================== -->
+
+  <!-- 1. Major Wars & Battles Dossier Modal -->
+  <div id="wars-modal" class="hist-modal hidden fixed inset-0 z-50 bg-black/80 backdrop-blur-md items-center justify-center p-4">
+    <div class="bg-stone-950 border border-red-900/80 rounded-2xl w-full max-w-4xl max-h-[88vh] flex flex-col shadow-2xl overflow-hidden">
+      <div class="p-4 border-b border-stone-800 flex items-center justify-between bg-stone-900/60">
+        <div class="flex items-center gap-2">
+          <span class="text-xl">⚔️</span>
+          <h3 class="font-serif font-bold text-lg text-red-300">The Major Wars & Battles (1746 – 1961)</h3>
+        </div>
+        <button class="modal-close-btn text-stone-400 hover:text-stone-100 p-1 cursor-pointer">
+          <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
+        </button>
+      </div>
+      <div id="wars-modal-content" class="p-6 overflow-y-auto space-y-4 scrollbar-thin">
+        <!-- Injected by app.js -->
+      </div>
+    </div>
+  </div>
+
+  <!-- 2. Historic Treaties Archive Modal -->
+  <div id="treaties-modal" class="hist-modal hidden fixed inset-0 z-50 bg-black/80 backdrop-blur-md items-center justify-center p-4">
+    <div class="bg-stone-950 border border-amber-900/80 rounded-2xl w-full max-w-4xl max-h-[88vh] flex flex-col shadow-2xl overflow-hidden">
+      <div class="p-4 border-b border-stone-800 flex items-center justify-between bg-stone-900/60">
+        <div class="flex items-center gap-2">
+          <span class="text-xl">📜</span>
+          <h3 class="font-serif font-bold text-lg text-amber-300">Historic Treaties & Imperial Decrees (1534 – 1947)</h3>
+        </div>
+        <button class="modal-close-btn text-stone-400 hover:text-stone-100 p-1 cursor-pointer">
+          <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
+        </button>
+      </div>
+      <div id="treaties-modal-content" class="p-6 overflow-y-auto space-y-4 scrollbar-thin">
+        <!-- Injected by app.js -->
+      </div>
+    </div>
+  </div>
+
+  <!-- 3. Famines & Exploitation Register Modal -->
+  <div id="famines-modal" class="hist-modal hidden fixed inset-0 z-50 bg-black/80 backdrop-blur-md items-center justify-center p-4">
+    <div class="bg-stone-950 border border-orange-900/80 rounded-2xl w-full max-w-4xl max-h-[88vh] flex flex-col shadow-2xl overflow-hidden">
+      <div class="p-4 border-b border-stone-800 flex items-center justify-between bg-stone-900/60">
+        <div class="flex items-center gap-2">
+          <span class="text-xl">🌾</span>
+          <h3 class="font-serif font-bold text-lg text-orange-300">The Great Colonial Famines: 35M+ Dead</h3>
+        </div>
+        <button class="modal-close-btn text-stone-400 hover:text-stone-100 p-1 cursor-pointer">
+          <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
+        </button>
+      </div>
+      <div id="famines-modal-content" class="p-6 overflow-y-auto space-y-4 scrollbar-thin">
+        <!-- Injected by app.js -->
+      </div>
+    </div>
+  </div>
+
+  <!-- 4. Dramatis Personae (Kings, Queens, Viceroys & Freedom Fighters) Modal -->
+  <div id="personae-modal" class="hist-modal hidden fixed inset-0 z-50 bg-black/80 backdrop-blur-md items-center justify-center p-4">
+    <div class="bg-stone-950 border border-purple-900/80 rounded-2xl w-full max-w-5xl max-h-[90vh] flex flex-col shadow-2xl overflow-hidden">
+      <div class="p-4 border-b border-stone-800 flex flex-wrap items-center justify-between gap-3 bg-stone-900/60">
+        <div class="flex items-center gap-2">
+          <span class="text-xl">👑</span>
+          <h3 class="font-serif font-bold text-lg text-purple-200">Dramatis Personae: The Major Kings, Queens & People</h3>
+        </div>
+        <!-- Filter Tabs & Search -->
+        <div class="flex flex-wrap items-center gap-2 text-xs">
+          <div class="flex items-center gap-1 bg-stone-900 p-0.5 rounded border border-stone-800">
+            <button onclick="window.app.renderPersonaeCards('all', document.getElementById('persona-search-input')?.value || '')" class="px-2.5 py-1 rounded bg-stone-800 hover:bg-stone-700 text-stone-200 cursor-pointer">All (43)</button>
+            <button onclick="window.app.renderPersonaeCards('royalty', document.getElementById('persona-search-input')?.value || '')" class="px-2.5 py-1 rounded bg-stone-800 hover:bg-stone-700 text-amber-300 cursor-pointer">Royalty</button>
+            <button onclick="window.app.renderPersonaeCards('freedom', document.getElementById('persona-search-input')?.value || '')" class="px-2.5 py-1 rounded bg-stone-800 hover:bg-stone-700 text-emerald-300 cursor-pointer">Freedom</button>
+            <button onclick="window.app.renderPersonaeCards('british', document.getElementById('persona-search-input')?.value || '')" class="px-2.5 py-1 rounded bg-stone-800 hover:bg-stone-700 text-red-300 cursor-pointer">British</button>
+          </div>
+          <input type="text" id="persona-search-input" placeholder="Search person..." oninput="window.app.renderPersonaeCards('all', this.value)" class="bg-stone-900 text-stone-200 text-xs px-2.5 py-1 rounded border border-stone-700 focus:outline-none focus:border-amber-500 w-36 sm:w-44">
+        </div>
+        <button class="modal-close-btn text-stone-400 hover:text-stone-100 p-1 cursor-pointer">
+          <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
+        </button>
+      </div>
+      <div id="personae-cards-grid" class="p-6 overflow-y-auto grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 scrollbar-thin">
+        <!-- Injected by app.js -->
+      </div>
+    </div>
+  </div>
+
+  <!-- 5. Economic Drain of Wealth Modal -->
+  <div id="drain-modal" class="hist-modal hidden fixed inset-0 z-50 bg-black/80 backdrop-blur-md items-center justify-center p-4">
+    <div class="bg-stone-950 border border-emerald-900/80 rounded-2xl w-full max-w-3xl max-h-[88vh] flex flex-col shadow-2xl overflow-hidden">
+      <div class="p-4 border-b border-stone-800 flex items-center justify-between bg-stone-900/60">
+        <div class="flex items-center gap-2">
+          <span class="text-xl">💰</span>
+          <h3 class="font-serif font-bold text-lg text-emerald-300">The $45 Trillion Drain of Wealth</h3>
+        </div>
+        <button class="modal-close-btn text-stone-400 hover:text-stone-100 p-1 cursor-pointer">
+          <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
+        </button>
+      </div>
+      <div id="drain-modal-content" class="p-6 overflow-y-auto space-y-4 scrollbar-thin">
+        <!-- Injected by app.js -->
+      </div>
+    </div>
+  </div>
+
+  <!-- Floating Mobile Quick-Jump Map Button (Visible on screens < 1024px) -->
+  <button id="mobile-map-shortcut" onclick="window.app.scrollToMap()" class="mobile-map-pill lg:hidden flex items-center gap-2 px-3.5 py-2 rounded-full bg-amber-600 hover:bg-amber-500 text-stone-950 font-bold text-xs border border-amber-400 cursor-pointer shadow-2xl transition-all">
+    <svg class="w-4 h-4 text-stone-950" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 20l-5.447-2.724A1 1 0 013 16.382V5.618a1 1 0 011.447-.894L9 7m0 13l6-3m-6 3V7m6 10l4.553 2.276A1 1 0 0021 18.382V7.618a1 1 0 00-.553-.894L15 4m0 13V4m0 0L9 7"/></svg>
+    <span>Map & Coords</span>
+  </button>
+
+  <!-- Application Scripts -->
+  <script src="js/data.js"></script>
+  <script src="js/audio.js"></script>
+  <script src="js/map.js"></script>
+  <script src="js/app.js"></script>
+</body>
+</html>
