@@ -251,25 +251,37 @@ class Application {
     const q = query.toLowerCase();
 
     const filtered = window.MAJOR_WARS.filter(w => {
-      const matchCat = filter === "all" || (w.period && w.period.toLowerCase().includes(filter));
-      const matchQuery = !q || w.name.toLowerCase().includes(q) ||
-        (w.keyBattles && w.keyBattles.some(b => b.toLowerCase().includes(q))) ||
-        (w.commanders && w.commanders.some(c => c.toLowerCase().includes(q)));
+      const warName = w.name || "";
+      const theater = w.theater || "";
+      const belligerents = Array.isArray(w.belligerents) ? w.belligerents.join(" ") : (w.belligerents || "");
+      const keyBattles = Array.isArray(w.keyBattles) ? w.keyBattles.join(" ") : (w.keyBattles || "");
+      const commanders = Array.isArray(w.commanders) ? w.commanders.join(" ") : (w.commanders || "");
+
+      const matchCat = filter === "all" || warName.toLowerCase().includes(filter.toLowerCase()) || theater.toLowerCase().includes(filter.toLowerCase());
+      const matchQuery = !q || warName.toLowerCase().includes(q) || theater.toLowerCase().includes(q) ||
+        belligerents.toLowerCase().includes(q) || keyBattles.toLowerCase().includes(q) || commanders.toLowerCase().includes(q);
       return matchCat && matchQuery;
     });
 
-    container.innerHTML = filtered.map(w => `
-      <div class="dossier-card">
-        <span class="card-badge" style="background:#fee2e2; color:#b91c1c;">WAR &bull; ${w.period}</span>
-        <h4 class="card-title">${w.name}</h4>
-        <div class="card-period"><strong>Belligerents:</strong> ${w.belligerents.join(" vs ")}</div>
-        <div class="card-desc"><strong>Key Engagements:</strong> ${w.keyBattles.join(", ")}</div>
-        <div class="card-desc"><strong>Commanders:</strong> ${w.commanders.join(", ")}</div>
-        <div class="card-footer">
-          <strong>Outcome:</strong> ${w.outcome}
+    container.innerHTML = filtered.map(w => {
+      const belligerentsText = Array.isArray(w.belligerents) ? w.belligerents.join(" vs ") : (w.belligerents || "");
+      const battlesText = Array.isArray(w.keyBattles) ? w.keyBattles.join(", ") : (w.keyBattles || "");
+      const commandersText = Array.isArray(w.commanders) ? w.commanders.join(", ") : (w.commanders || "");
+
+      return `
+        <div class="dossier-card">
+          <span class="card-badge" style="background:var(--color-accent-subtle); color:var(--color-accent); border:1px solid rgba(255,45,85,0.25);">⚔️ WAR &bull; ${w.theater || "India"}</span>
+          <h4 class="card-title">${w.name}</h4>
+          <div class="card-period"><strong>Belligerents:</strong> ${belligerentsText}</div>
+          <div class="card-desc"><strong>Key Battles:</strong> ${battlesText}</div>
+          <div class="card-desc"><strong>Commanders:</strong> ${commandersText}</div>
+          ${w.significance ? `<div class="card-desc" style="font-style:italic; font-size:11.5px; opacity:0.9;">${w.significance}</div>` : ""}
+          <div class="card-footer">
+            <strong>Outcome:</strong> ${w.outcome || "Decisive imperial engagement"}
+          </div>
         </div>
-      </div>
-    `).join("");
+      `;
+    }).join("");
   }
 
   /**
@@ -281,25 +293,22 @@ class Application {
 
     const q = query.toLowerCase();
     const filtered = window.TREATIES_ARCHIVE.filter(t => {
-      return !q || t.name.toLowerCase().includes(q) ||
-        t.signatories.toLowerCase().includes(q) ||
-        t.context.toLowerCase().includes(q) ||
-        t.year.includes(q);
+      const name = t.name || "";
+      const sigs = t.signatories || "";
+      const loc = t.location || "";
+      const terms = t.keyTerms || "";
+      return !q || name.toLowerCase().includes(q) || sigs.toLowerCase().includes(q) || loc.toLowerCase().includes(q) || terms.toLowerCase().includes(q);
     });
 
     container.innerHTML = filtered.map(t => `
       <div class="dossier-card">
-        <span class="card-badge" style="background:#fef3c7; color:#b45309;">TREATY &bull; ${t.year}</span>
+        <span class="card-badge" style="background:var(--color-gold-subtle); color:var(--color-gold); border:1px solid rgba(245,158,11,0.25);">📜 TREATY &bull; ${t.date || ""}</span>
         <h4 class="card-title">${t.name}</h4>
-        <div class="card-period"><strong>Signatories:</strong> ${t.signatories}</div>
-        <div class="card-desc">${t.context}</div>
-        <div class="card-desc"><strong>Key Terms:</strong>
-          <ul style="margin:4px 0 0 16px; padding:0; list-style:disc;">
-            ${t.clauses.map(c => `<li style="font-size:11px; margin-bottom:2px;">${c}</li>`).join("")}
-          </ul>
-        </div>
+        <div class="card-period"><strong>Signatories:</strong> ${t.signatories || ""}</div>
+        <div class="card-period"><strong>Location:</strong> ${t.location || ""}</div>
+        <div class="card-desc"><strong>Key Terms:</strong> ${t.keyTerms || ""}</div>
         <div class="card-footer">
-          <strong>Imperial Aftermath:</strong> ${t.aftermath}
+          <strong>Imperial Impact:</strong> ${t.impact || ""}
         </div>
       </div>
     `).join("");
@@ -314,22 +323,20 @@ class Application {
 
     const q = query.toLowerCase();
     const filtered = window.FAMINES_REGISTER.filter(f => {
-      return !q || f.name.toLowerCase().includes(q) ||
-        f.regions.toLowerCase().includes(q) ||
-        f.viceroy.toLowerCase().includes(q) ||
-        f.year.includes(q);
+      const name = f.name || "";
+      const years = f.years || "";
+      const regions = f.regions || "";
+      const policy = f.colonialPolicyCause || "";
+      return !q || name.toLowerCase().includes(q) || years.includes(q) || regions.toLowerCase().includes(q) || policy.toLowerCase().includes(q);
     });
 
     container.innerHTML = filtered.map(f => `
       <div class="dossier-card">
-        <span class="card-badge" style="background:#ffedd5; color:#c2410c;">${f.casualties} LIVES LOST</span>
-        <h4 class="card-title">${f.name} (${f.year})</h4>
-        <div class="card-period"><strong>Regions:</strong> ${f.regions}</div>
-        <div class="card-desc"><strong>Administration:</strong> ${f.viceroy}</div>
-        <div class="card-desc">${f.analysis}</div>
-        <div class="card-footer" style="color:#b91c1c;">
-          <strong>Export Policy:</strong> ${f.exports}
-        </div>
+        <span class="card-badge" style="background:rgba(239,68,68,0.15); color:#ef4444; border:1px solid rgba(239,68,68,0.25);">🌾 ${f.deathToll || "Devastating Loss of Life"}</span>
+        <h4 class="card-title">${f.name} (${f.years})</h4>
+        <div class="card-period"><strong>Affected Regions:</strong> ${f.regions || ""}</div>
+        <div class="card-desc"><strong>Colonial Policy Cause:</strong> ${f.colonialPolicyCause || ""}</div>
+        ${f.contemporaryQuote ? `<div class="card-desc" style="font-style:italic; font-size:11.5px; border-left:2px solid #ef4444; padding-left:8px; margin:4px 0;">"${f.contemporaryQuote}"</div>` : ""}
       </div>
     `).join("");
   }
@@ -345,34 +352,26 @@ class Application {
     const q = query.toLowerCase();
 
     const filtered = window.DRAMATIS_PERSONAE.filter(p => {
-      const matchCat = filter === "all" || p.category === filter;
-      const matchQuery = !q || p.name.toLowerCase().includes(q) ||
-        p.role.toLowerCase().includes(q) ||
-        p.era.toLowerCase().includes(q);
+      const side = (p.side || "").toLowerCase();
+      const matchCat = filter === "all" || 
+        (filter === "royalty" && (side.includes("royalty") || side.includes("ruler"))) ||
+        (filter === "freedom" && (side.includes("freedom") || side.includes("rebel") || side.includes("resistance"))) ||
+        (filter === "british" && (side.includes("british") || side.includes("portuguese") || side.includes("colonial") || side.includes("viceroy")));
+
+      const matchQuery = !q || (p.name || "").toLowerCase().includes(q) ||
+        (p.role || "").toLowerCase().includes(q) ||
+        (p.bio || "").toLowerCase().includes(q);
       return matchCat && matchQuery;
     });
 
-    const categoryBadges = {
-      royalty: { bg: "#fef3c7", color: "#b45309", label: "INDIAN ROYALTY 👑" },
-      freedom: { bg: "#dcfce7", color: "#15803d", label: "FREEDOM FIGHTER 🇮🇳" },
-      british: { bg: "#fee2e2", color: "#b91c1c", label: "BRITISH RAJ 🏛️" }
-    };
-
-    container.innerHTML = filtered.map(p => {
-      const badgeInfo = categoryBadges[p.category] || { bg: "#f4f4f6", color: "#52525b", label: "PERSONA" };
-      return `
-        <div class="dossier-card">
-          <span class="card-badge" style="background:${badgeInfo.bg}; color:${badgeInfo.color};">${badgeInfo.label}</span>
-          <h4 class="card-title">${p.name}</h4>
-          <div class="card-period">${p.role} &bull; ${p.lifespan}</div>
-          <div class="card-desc">${p.bio}</div>
-          ${p.quote ? `<blockquote style="font-style:italic; font-size:11px; color:var(--text-muted); border-left:2px solid var(--border-glass); padding-left:8px; margin:4px 0;">"${p.quote}"</blockquote>` : ""}
-          <div class="card-footer">
-            <strong>Historical Legacy:</strong> ${p.legacy}
-          </div>
-        </div>
-      `;
-    }).join("");
+    container.innerHTML = filtered.map(p => `
+      <div class="dossier-card">
+        <span class="card-badge" style="background:var(--color-blue-subtle); color:var(--color-blue); border:1px solid rgba(0,113,227,0.25);">👑 ${p.side || "Historical Actor"}</span>
+        <h4 class="card-title">${p.name}</h4>
+        <div class="card-period">${p.role} &bull; ${p.period}</div>
+        <div class="card-desc">${p.bio}</div>
+      </div>
+    `).join("");
   }
 
   /**
@@ -383,37 +382,40 @@ class Application {
     if (!container || !window.ECONOMIC_DRAIN_DATA) return;
 
     const d = window.ECONOMIC_DRAIN_DATA;
+    const startGDP = (d.shareOfWorldGDP && d.shareOfWorldGDP.start1700) || "27.0%";
+    const endGDP = (d.shareOfWorldGDP && d.shareOfWorldGDP.end1947) || "< 3.0%";
+
     container.innerHTML = `
-      <div style="background:#f0fdf4; border:1px solid #bbf7d0; border-radius:16px; padding:20px; margin-bottom:20px;">
-        <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:8px; margin-bottom:10px;">
-          <h4 style="font-size:22px; font-weight:700; color:#166534; margin:0;">${d.totalDrainValueUSD} Net Wealth Extracted</h4>
-          <span style="font-size:11px; font-weight:700; padding:4px 10px; background:#dcfce7; color:#15803d; border-radius:12px;">${d.yearsCovered}</span>
+      <div style="background:rgba(16,185,129,0.08); border:1px solid rgba(16,185,129,0.25); border-radius:20px; padding:22px; margin-bottom:20px;">
+        <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:8px; margin-bottom:12px;">
+          <h4 style="font-size:24px; font-weight:800; color:#10b981; margin:0; font-family:var(--font-sans);">${d.totalDrainValueUSD || "$45 Trillion"} Net Wealth Extracted</h4>
+          <span style="font-size:11px; font-weight:700; padding:4px 12px; background:rgba(16,185,129,0.18); color:#10b981; border-radius:9999px;">${d.yearsCovered || "1765 – 1938"}</span>
         </div>
-        <p style="font-size:13px; color:#14532d; line-height:1.6; margin-bottom:12px;">
-          According to ground-breaking research published by Columbia University Press, Britain drained a total of nearly <strong>$45 Trillion</strong> from India over 173 years. This systematic siphoning collapsed India's share of the global economy from <strong>27.0%</strong> in 1700 to <strong>less than 3.0%</strong> at Independence in 1947.
+        <p style="font-size:13px; color:var(--text-secondary); line-height:1.65; margin-bottom:14px;">
+          Groundbreaking historical economic analysis published by <strong>Columbia University Press</strong> documents how Britain drained nearly <strong>$45 Trillion</strong> from India. This unrequited imperial extraction collapsed India from generating <strong>${startGDP}</strong> of the world economy in 1700 down to <strong>${endGDP}</strong> at Independence in 1947.
         </p>
-        <div style="display:flex; gap:16px; font-size:12px; color:#166534; font-weight:600; padding-top:8px; border-top:1px solid #bbf7d0;">
-          <div>Global GDP Share (1700): <span style="font-weight:700;">${d.shareOfWorldGDP.year1700}</span></div>
-          <div>Global GDP Share (1947): <span style="font-weight:700; color:#b91c1c;">${d.shareOfWorldGDP.year1947}</span></div>
+        <div style="display:flex; gap:20px; font-size:12.5px; color:var(--text-primary); font-weight:600; padding-top:10px; border-top:1px solid rgba(16,185,129,0.2);">
+          <div>Global GDP Share (1700): <span style="font-weight:700; color:#10b981;">${startGDP}</span></div>
+          <div>Global GDP Share (1947): <span style="font-weight:700; color:#ef4444;">${endGDP}</span></div>
         </div>
       </div>
 
       <h5 class="figures-section-title" style="margin-bottom:12px;">5 Structural Extraction Mechanisms</h5>
       <div style="display:flex; flex-direction:column; gap:12px;">
-        ${d.mechanisms.map((m, idx) => `
-          <div class="dossier-card" style="padding:14px 18px;">
+        ${(d.mechanisms || []).map((m, idx) => `
+          <div class="dossier-card" style="padding:16px 20px;">
             <div style="font-weight:700; font-size:14px; color:var(--text-primary); margin-bottom:4px;">
               ${idx + 1}. ${m.title}
             </div>
-            <div style="font-size:12px; color:var(--text-secondary); line-height:1.6;">
+            <div style="font-size:12.5px; color:var(--text-secondary); line-height:1.6;">
               ${m.desc}
             </div>
           </div>
         `).join("")}
       </div>
 
-      <div style="margin-top:20px; padding:16px; background:var(--bg-card-subtle); border-radius:12px; font-size:12px; color:var(--text-muted); line-height:1.6;">
-        <strong>Research Reference:</strong> ${d.source}. Calculated by tracking 173 years of detailed tax, trade, and bullion exchange data, compounding at a modest 5% interest rate from 1765 to 1938.
+      <div style="margin-top:20px; padding:16px; background:var(--bg-card-subtle); border:var(--glass-border-subtle); border-radius:16px; font-size:12px; color:var(--text-muted); line-height:1.6;">
+        <strong>Research Reference:</strong> ${d.source || "Prof. Utsa Patnaik (Columbia University Press)"}. Calculated by tracking 173 years of detailed tax, trade, and bullion exchange data, compounding at a modest 5% interest rate from 1765 to 1938.
       </div>
     `;
   }
