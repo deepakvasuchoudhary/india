@@ -1,17 +1,18 @@
 /**
- * INDIA: CHRONICA IMPERII INDICI
- * Application Controller & Event Orchestrator
- * Wires the Minimalist Editorial UI: Dock timeline, Media HUD controls,
- * Global search, Tanpura drone soundscape, and Deep-Dive Dossier Modals.
+ * CHRONICA IMPERII INDICI (1498 – 1961)
+ * Application Orchestrator & Dossier Controller
+ * Coordinates audio synthesis, map layers, slide engine, global search,
+ * theme switching, and interactive research modals.
  */
 
 class Application {
   constructor() {
     this.audioEngine = null;
     this.mapController = null;
-    this.scroller = null;
-    this.currentPersonaFilter = "all";
+    this.engine = null;
+    this.currentTheme = "light";
     this.currentWarFilter = "all";
+    this.currentPersonaFilter = "all";
   }
 
   init() {
@@ -27,16 +28,20 @@ class Application {
       window.mapController = this.mapController;
     }
 
-    // 2. Scroller & Timeline Engine
-    if (window.ScrollytellingEngine) {
-      this.scroller = new ScrollytellingEngine(this.mapController);
-      this.scroller.init();
-      window.scroller = this.scroller;
+    // 2. Presentation Slide Engine
+    if (window.PresentationEngine) {
+      this.engine = new PresentationEngine(this.mapController);
+      this.engine.init();
+      window.presentationEngine = this.engine;
+      window.scroller = this.engine;
     }
 
     // 3. Setup UI Controls
     this.setupEventListeners();
     this.setupSearch();
+    this.setupThemeToggle();
+
+    // 4. Pre-render Modal Dossiers
     this.renderWarsModal();
     this.renderTreatiesModal();
     this.renderFaminesModal();
@@ -45,55 +50,42 @@ class Application {
   }
 
   setupEventListeners() {
-    // Left Dock Tour Button
+    // Scrubber Play/Pause Button
     const tourBtn = document.getElementById("btn-dock-tour");
-    if (tourBtn && this.scroller) {
+    if (tourBtn && this.engine) {
       tourBtn.addEventListener("click", () => {
-        this.scroller.toggleAutoTour();
+        this.engine.toggleAutoTour();
       });
     }
 
-    // Prev / Next Stage Chevrons
-    const prevBtn = document.getElementById("btn-stage-prev");
-    if (prevBtn && this.scroller) {
-      prevBtn.addEventListener("click", () => {
-        this.scroller.prevMilestone();
-      });
+    // Prev / Next Step Buttons on Scrubber
+    const scrubPrev = document.getElementById("btn-scrub-prev");
+    if (scrubPrev && this.engine) {
+      scrubPrev.addEventListener("click", () => this.engine.prevSlide());
     }
 
-    const nextBtn = document.getElementById("btn-stage-next");
-    if (nextBtn && this.scroller) {
-      nextBtn.addEventListener("click", () => {
-        this.scroller.nextMilestone();
-      });
+    const scrubNext = document.getElementById("btn-scrub-next");
+    if (scrubNext && this.engine) {
+      scrubNext.addEventListener("click", () => this.engine.nextSlide());
     }
 
-    // Figure Chips Click in Deep-Dive
-    const figuresContainer = document.getElementById("editorial-figures-chips");
-    if (figuresContainer) {
-      figuresContainer.addEventListener("click", (e) => {
-        const chip = e.target.closest(".site-chip-btn");
-        if (chip) {
-          const figName = chip.dataset.figureName;
-          this.openPersonaeModal(figName);
-        }
-      });
+    // Map Paging Chevrons
+    const stagePrev = document.getElementById("btn-stage-prev");
+    if (stagePrev && this.engine) {
+      stagePrev.addEventListener("click", () => this.engine.prevSlide());
     }
 
-    // Map HUD Toggles
+    const stageNext = document.getElementById("btn-stage-next");
+    if (stageNext && this.engine) {
+      stageNext.addEventListener("click", () => this.engine.nextSlide());
+    }
+
+    // Map HUD Controls
     const btnBoundaries = document.getElementById("btn-toggle-boundaries");
     if (btnBoundaries && this.mapController) {
       btnBoundaries.addEventListener("click", () => {
         const active = this.mapController.toggleBoundaries();
         btnBoundaries.classList.toggle("active", active);
-      });
-    }
-
-    const btnSites = document.getElementById("btn-toggle-sites");
-    if (btnSites && this.mapController) {
-      btnSites.addEventListener("click", () => {
-        const active = this.mapController.toggleSites();
-        btnSites.classList.toggle("active", active);
       });
     }
 
@@ -105,28 +97,48 @@ class Application {
       });
     }
 
-    const btnTheme = document.getElementById("btn-toggle-theme");
-    if (btnTheme && this.mapController) {
-      const themes = ["voyager", "dark", "light"];
-      let themeIndex = 0;
-      btnTheme.addEventListener("click", () => {
-        themeIndex = (themeIndex + 1) % themes.length;
-        const newTheme = themes[themeIndex];
-        this.mapController.setTheme(newTheme);
-        btnTheme.textContent = newTheme.charAt(0).toUpperCase() + newTheme.slice(1);
+    const btnSites = document.getElementById("btn-toggle-sites");
+    if (btnSites && this.mapController) {
+      btnSites.addEventListener("click", () => {
+        const active = this.mapController.toggleSites();
+        btnSites.classList.toggle("active", active);
       });
     }
 
-    // Tanpura Drone Audio Button
+    const btnMapTheme = document.getElementById("btn-toggle-map-theme");
+    if (btnMapTheme && this.mapController) {
+      const themes = ["voyager", "dark", "light"];
+      let themeIndex = 0;
+      btnMapTheme.addEventListener("click", () => {
+        themeIndex = (themeIndex + 1) % themes.length;
+        const newTheme = themes[themeIndex];
+        this.mapController.setTheme(newTheme);
+        btnMapTheme.textContent = newTheme.charAt(0).toUpperCase() + newTheme.slice(1);
+      });
+    }
+
+    // Figures Chips Clicks inside Story Card
+    const figuresWrap = document.getElementById("slide-figures-chips");
+    if (figuresWrap) {
+      figuresWrap.addEventListener("click", (e) => {
+        const chip = e.target.closest(".persona-avatar-chip");
+        if (chip) {
+          const name = chip.dataset.name;
+          this.openPersonaeModal(name);
+        }
+      });
+    }
+
+    // Audio Tanpura Toggle
     const audioBtn = document.getElementById("btn-audio-toggle");
     if (audioBtn && this.audioEngine) {
       audioBtn.addEventListener("click", () => {
         if (this.audioEngine.isPlaying) {
           this.audioEngine.stop();
-          audioBtn.classList.remove("audio-active");
+          audioBtn.classList.remove("audio-playing");
         } else {
           this.audioEngine.start();
-          audioBtn.classList.add("audio-active");
+          audioBtn.classList.add("audio-playing");
         }
       });
     }
@@ -136,9 +148,7 @@ class Application {
       const btn = document.getElementById(btnId);
       const modal = document.getElementById(modalId);
       if (btn && modal) {
-        btn.addEventListener("click", () => {
-          this.openModal(modalId);
-        });
+        btn.addEventListener("click", () => this.openModal(modalId));
       }
     };
 
@@ -148,18 +158,14 @@ class Application {
     bindModalBtn("btn-open-personae-modal", "personae-modal");
     bindModalBtn("btn-open-drain-modal", "drain-modal");
 
-    // Modal Closing (Close button, backdrop click, Escape key)
+    // Modal Closing
     document.querySelectorAll(".modal-backdrop").forEach(modal => {
       const closeBtn = modal.querySelector(".modal-close-btn");
       if (closeBtn) {
-        closeBtn.addEventListener("click", () => {
-          modal.classList.remove("open");
-        });
+        closeBtn.addEventListener("click", () => modal.classList.remove("open"));
       }
       modal.addEventListener("click", (e) => {
-        if (e.target === modal) {
-          modal.classList.remove("open");
-        }
+        if (e.target === modal) modal.classList.remove("open");
       });
     });
 
@@ -167,6 +173,30 @@ class Application {
       if (e.key === "Escape") {
         document.querySelectorAll(".modal-backdrop.open").forEach(m => m.classList.remove("open"));
       }
+    });
+  }
+
+  setupThemeToggle() {
+    const btn = document.getElementById("theme-toggle-btn");
+    if (!btn) return;
+
+    btn.addEventListener("click", () => {
+      this.currentTheme = this.currentTheme === "light" ? "dark" : "light";
+      document.body.setAttribute("data-theme", this.currentTheme);
+
+      // Sync map theme
+      if (this.mapController) {
+        const targetMapTheme = this.currentTheme === "dark" ? "dark" : "voyager";
+        this.mapController.setTheme(targetMapTheme);
+        const mapThemeBtn = document.getElementById("btn-toggle-map-theme");
+        if (mapThemeBtn) {
+          mapThemeBtn.textContent = targetMapTheme.charAt(0).toUpperCase() + targetMapTheme.slice(1);
+        }
+      }
+
+      btn.innerHTML = this.currentTheme === "dark" 
+        ? `<svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="5"/><line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/><line x1="1" y1="12" x2="3" y2="12"/><line x1="21" y1="12" x2="23" y2="12"/><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/></svg>`
+        : `<svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg>`;
     });
   }
 
@@ -194,7 +224,7 @@ class Application {
   openDrainModal() { this.openModal("drain-modal"); }
 
   /**
-   * 1. Render Major Wars & Battles Dossier Modal
+   * 1. Render Wars Modal
    */
   renderWarsModal(filter = "all", query = "") {
     const container = document.getElementById("wars-cards-grid");
@@ -226,7 +256,7 @@ class Application {
   }
 
   /**
-   * 2. Render Historic Treaties Archive Modal
+   * 2. Render Treaties Modal
    */
   renderTreatiesModal(query = "") {
     const container = document.getElementById("treaties-cards-grid");
@@ -259,7 +289,7 @@ class Application {
   }
 
   /**
-   * 3. Render Great Famines Register Modal
+   * 3. Render Famines Modal
    */
   renderFaminesModal(query = "") {
     const container = document.getElementById("famines-cards-grid");
@@ -278,7 +308,7 @@ class Application {
         <span class="card-badge" style="background:#ffedd5; color:#c2410c;">${f.casualties} LIVES LOST</span>
         <h4 class="card-title">${f.name} (${f.year})</h4>
         <div class="card-period"><strong>Regions:</strong> ${f.regions}</div>
-        <div class="card-desc"><strong>Administration / Viceroy:</strong> ${f.viceroy}</div>
+        <div class="card-desc"><strong>Administration:</strong> ${f.viceroy}</div>
         <div class="card-desc">${f.analysis}</div>
         <div class="card-footer" style="color:#b91c1c;">
           <strong>Export Policy:</strong> ${f.exports}
@@ -288,7 +318,7 @@ class Application {
   }
 
   /**
-   * 4. Render Dramatis Personae Modal
+   * 4. Render Personae Modal
    */
   renderPersonaeModal(filter = "all", query = "") {
     const container = document.getElementById("personae-cards-grid");
@@ -319,7 +349,7 @@ class Application {
           <h4 class="card-title">${p.name}</h4>
           <div class="card-period">${p.role} &bull; ${p.lifespan}</div>
           <div class="card-desc">${p.bio}</div>
-          ${p.quote ? `<blockquote style="font-style:italic; font-size:11px; color:#52525b; border-left:2px solid #d4d4d8; padding-left:8px; margin:4px 0;">"${p.quote}"</blockquote>` : ""}
+          ${p.quote ? `<blockquote style="font-style:italic; font-size:11px; color:var(--text-muted); border-left:2px solid var(--border-glass); padding-left:8px; margin:4px 0;">"${p.quote}"</blockquote>` : ""}
           <div class="card-footer">
             <strong>Historical Legacy:</strong> ${p.legacy}
           </div>
@@ -329,7 +359,7 @@ class Application {
   }
 
   /**
-   * 5. Render $45 Trillion Drain of Wealth Modal
+   * 5. Render $45 Trillion Economic Drain Modal
    */
   renderDrainModal() {
     const container = document.getElementById("drain-modal-body");
@@ -338,141 +368,141 @@ class Application {
     const d = window.ECONOMIC_DRAIN_DATA;
     container.innerHTML = `
       <div style="background:#f0fdf4; border:1px solid #bbf7d0; border-radius:16px; padding:20px; margin-bottom:20px;">
-        <h4 style="font-size:18px; font-weight:700; color:#166534; margin-bottom:6px;">${d.totalAmount} Extracted (1765 – 1938)</h4>
-        <p style="font-size:13px; color:#14532d; line-height:1.6;">
-          ${d.summary}
+        <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:8px; margin-bottom:10px;">
+          <h4 style="font-size:22px; font-weight:700; color:#166534; margin:0;">${d.totalDrainValueUSD} Net Wealth Extracted</h4>
+          <span style="font-size:11px; font-weight:700; padding:4px 10px; background:#dcfce7; color:#15803d; border-radius:12px;">${d.yearsCovered}</span>
+        </div>
+        <p style="font-size:13px; color:#14532d; line-height:1.6; margin-bottom:12px;">
+          According to ground-breaking research published by Columbia University Press, Britain drained a total of nearly <strong>$45 Trillion</strong> from India over 173 years. This systematic siphoning collapsed India's share of the global economy from <strong>27.0%</strong> in 1700 to <strong>less than 3.0%</strong> at Independence in 1947.
         </p>
+        <div style="display:flex; gap:16px; font-size:12px; color:#166534; font-weight:600; padding-top:8px; border-top:1px solid #bbf7d0;">
+          <div>Global GDP Share (1700): <span style="font-weight:700;">${d.shareOfWorldGDP.year1700}</span></div>
+          <div>Global GDP Share (1947): <span style="font-weight:700; color:#b91c1c;">${d.shareOfWorldGDP.year1947}</span></div>
+        </div>
       </div>
 
-      <h5 class="deep-dive-subheading" style="margin-bottom:12px;">5 Structural Extraction Mechanisms</h5>
+      <h5 class="figures-section-title" style="margin-bottom:12px;">5 Structural Extraction Mechanisms</h5>
       <div style="display:flex; flex-direction:column; gap:12px;">
         ${d.mechanisms.map((m, idx) => `
           <div class="dossier-card" style="padding:14px 18px;">
-            <div style="font-weight:700; font-size:14px; color:var(--text-dark); margin-bottom:4px;">
+            <div style="font-weight:700; font-size:14px; color:var(--text-primary); margin-bottom:4px;">
               ${idx + 1}. ${m.title}
             </div>
-            <div style="font-size:12px; color:var(--text-body); line-height:1.6;">
+            <div style="font-size:12px; color:var(--text-secondary); line-height:1.6;">
               ${m.desc}
             </div>
           </div>
         `).join("")}
       </div>
 
-      <div style="margin-top:20px; padding:16px; background:#fafafc; border-radius:12px; font-size:12px; color:var(--text-muted); line-height:1.6;">
-        <strong>Research Reference:</strong> Prof. Utsa Patnaik (Columbia University Press) calculated this drain by tracking 173 years of detailed trade and exchange data, compounding at a modest 5% interest rate from 1765 to 1938. India contributed a net export surplus to Britain for centuries that financed Britain's industrial revolution and imperial warfare worldwide.
+      <div style="margin-top:20px; padding:16px; background:var(--bg-card-subtle); border-radius:12px; font-size:12px; color:var(--text-muted); line-height:1.6;">
+        <strong>Research Reference:</strong> ${d.source}. Calculated by tracking 173 years of detailed tax, trade, and bullion exchange data, compounding at a modest 5% interest rate from 1765 to 1938.
       </div>
     `;
   }
 
   /**
-   * Setup Global Search across all 63 events, 43 figures, 16 wars, 13 treaties, 10 famines
+   * Setup Global Search across all datasets
    */
   setupSearch() {
     const input = document.getElementById("global-search-input");
-    const dropdown = document.getElementById("search-results-dropdown");
-    if (!input || !dropdown) return;
+    const popover = document.getElementById("search-results-popover");
+    if (!input || !popover) return;
 
     const index = [];
 
-    // Add Timeline Events
     if (window.TIMELINE_EVENTS) {
       window.TIMELINE_EVENTS.forEach((ev, idx) => {
         index.push({
-          type: "event",
+          type: "slide",
           title: ev.title,
-          meta: `Milestone ${idx + 1} · ${ev.year} · ${ev.locationName.split(",")[0]}`,
-          milestoneIndex: idx,
-          eventId: ev.id
+          meta: `Slide ${idx + 1} &bull; ${ev.year} &bull; ${ev.locationName.split(",")[0]}`,
+          slideIndex: idx
         });
       });
     }
 
-    // Add Personae
     if (window.DRAMATIS_PERSONAE) {
       window.DRAMATIS_PERSONAE.forEach(p => {
         index.push({
           type: "persona",
           title: p.name,
-          meta: `Persona · ${p.role} (${p.lifespan})`,
+          meta: `Persona &bull; ${p.role} (${p.lifespan})`,
           personaName: p.name
         });
       });
     }
 
-    // Add Wars
     if (window.MAJOR_WARS) {
       window.MAJOR_WARS.forEach(w => {
         index.push({
           type: "war",
           title: w.name,
-          meta: `War · ${w.period} · ${w.outcome.slice(0, 45)}...`,
+          meta: `War &bull; ${w.period}`,
           warName: w.name
         });
       });
     }
 
-    // Add Treaties
     if (window.TREATIES_ARCHIVE) {
       window.TREATIES_ARCHIVE.forEach(t => {
         index.push({
           type: "treaty",
           title: t.name,
-          meta: `Treaty · ${t.year} · ${t.signatories}`,
+          meta: `Treaty &bull; ${t.year} &bull; ${t.signatories}`,
           treatyName: t.name
         });
       });
     }
 
-    // Add Famines
     if (window.FAMINES_REGISTER) {
       window.FAMINES_REGISTER.forEach(f => {
         index.push({
           type: "famine",
           title: f.name,
-          meta: `Famine · ${f.year} · ${f.casualties}`,
+          meta: `Famine &bull; ${f.year} &bull; ${f.casualties}`,
           famineName: f.name
         });
       });
     }
 
     input.addEventListener("input", () => {
-      const query = input.value.trim().toLowerCase();
-      if (!query) {
-        dropdown.classList.remove("active");
-        dropdown.innerHTML = "";
+      const q = input.value.trim().toLowerCase();
+      if (!q) {
+        popover.classList.remove("active");
+        popover.innerHTML = "";
         return;
       }
 
-      const matches = index.filter(item =>
-        item.title.toLowerCase().includes(query) ||
-        item.meta.toLowerCase().includes(query)
+      const matches = index.filter(item => 
+        item.title.toLowerCase().includes(q) || 
+        item.meta.toLowerCase().includes(q)
       ).slice(0, 8);
 
       if (matches.length === 0) {
-        dropdown.innerHTML = `<div style="padding:12px 16px; font-size:13px; color:#8e8e93;">No matching historical records found.</div>`;
+        popover.innerHTML = `<div style="padding:12px 16px; font-size:13px; color:var(--text-muted);">No historical records matched.</div>`;
       } else {
-        dropdown.innerHTML = matches.map((m, i) => `
-          <div class="search-result-item" data-type="${m.type}" data-index="${i}" data-milestone-index="${m.milestoneIndex !== undefined ? m.milestoneIndex : ""}" data-name="${m.personaName || m.warName || m.treatyName || m.famineName || ""}">
-            <span class="result-title">${m.title}</span>
-            <span class="result-meta">${m.meta}</span>
+        popover.innerHTML = matches.map((m, i) => `
+          <div class="search-hit-item" data-type="${m.type}" data-slide-index="${m.slideIndex !== undefined ? m.slideIndex : ""}" data-name="${m.personaName || m.warName || m.treatyName || m.famineName || ""}">
+            <span class="hit-title">${m.title}</span>
+            <span class="hit-meta">${m.meta}</span>
           </div>
         `).join("");
       }
 
-      dropdown.classList.add("active");
+      popover.classList.add("active");
     });
 
-    dropdown.addEventListener("click", (e) => {
-      const item = e.target.closest(".search-result-item");
+    popover.addEventListener("click", (e) => {
+      const item = e.target.closest(".search-hit-item");
       if (!item) return;
 
       const type = item.dataset.type;
-      const milestoneIdxStr = item.dataset.milestoneIndex;
+      const slideIdxStr = item.dataset.slideIndex;
       const targetName = item.dataset.name;
 
-      if (type === "event" && milestoneIdxStr !== "" && this.scroller) {
-        const idx = parseInt(milestoneIdxStr, 10);
-        this.scroller.activateMilestoneByIndex(idx, true);
+      if (type === "slide" && slideIdxStr !== "" && this.engine) {
+        this.engine.activateSlideByIndex(parseInt(slideIdxStr, 10), true);
       } else if (type === "persona") {
         this.openPersonaeModal(targetName);
       } else if (type === "war") {
@@ -483,13 +513,21 @@ class Application {
         this.openFaminesModal();
       }
 
-      dropdown.classList.remove("active");
+      popover.classList.remove("active");
       input.value = "";
     });
 
     document.addEventListener("click", (e) => {
-      if (!e.target.closest(".nav-search-wrapper")) {
-        dropdown.classList.remove("active");
+      if (!e.target.closest(".nav-search-box")) {
+        popover.classList.remove("active");
+      }
+    });
+
+    // Keyboard shortcut CMD+K or CTRL+K to focus search
+    window.addEventListener("keydown", (e) => {
+      if ((e.metaKey || e.ctrlKey) && e.key === "k") {
+        e.preventDefault();
+        input.focus();
       }
     });
   }

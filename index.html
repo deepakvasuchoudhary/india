@@ -4,243 +4,309 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Chronica Imperii Indici: India's Colonial Past (1498 – 1961)</title>
-  <meta name="description" content="An interactive scrollytelling chronicle of European colonial presence and Indian resistance, charting 451 years across 63 milestones, wars, treaties, famines, and maps.">
+  <meta name="description" content="An interactive exhibition deck charting 451 years of Indian colonial history and freedom struggles across 63 milestones, battles, treaties, famines, and dynamic maps.">
 
   <!-- Google Fonts: Playfair Display & Plus Jakarta Sans -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,500;0,600;0,700;1,400;1,600&family=Plus+Jakarta+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,500;0,600;0,700;1,400;1,600&family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
 
   <!-- Leaflet CSS 1.9.4 -->
   <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin=""/>
 
-  <!-- Main Replica Stylesheet -->
-  <link rel="stylesheet" href="css/styles.css?v=2.1.0">
+  <!-- Cinematic Slide Presentation Stylesheet -->
+  <link rel="stylesheet" href="css/styles.css?v=3.0.0">
 </head>
-<body data-map-theme="voyager">
+<body data-theme="light">
 
   <!-- =========================================================================
-       Sticky Top Header (Fixed Nav & Centered Chapter Title)
+       1. Fixed Top Glass Navigation Bar (60px)
        ========================================================================= -->
-  <header class="sticky-header-container" id="sticky-header-container">
-    <div class="top-nav-bar">
-      <!-- Left: Brand Emblem & Title -->
-      <div class="nav-left">
-        <a href="#" class="brand-link" title="Chronica Imperii Indici">
-          <!-- Ashoka Chakra 24-spoke SVG -->
-          <svg class="brand-emblem" viewBox="0 0 100 100" fill="none" stroke="currentColor">
-            <circle cx="50" cy="50" r="46" stroke-width="3"/>
-            <circle cx="50" cy="50" r="14" stroke-width="2.5"/>
-            <circle cx="50" cy="50" r="5" fill="currentColor"/>
-            <g stroke-width="1.8">
-              <line x1="50" y1="50" x2="50" y2="4"/><line x1="50" y1="50" x2="50" y2="96"/>
-              <line x1="50" y1="50" x2="4" y2="50"/><line x1="50" y1="50" x2="96" y2="50"/>
-              <line x1="50" y1="50" x2="17.47" y2="17.47"/><line x1="50" y1="50" x2="82.53" y2="82.53"/>
-              <line x1="50" y1="50" x2="17.47" y2="82.53"/><line x1="50" y1="50" x2="82.53" y2="17.47"/>
-              <line x1="50" y1="50" x2="38.1" y2="5.17"/><line x1="50" y1="50" x2="61.9" y2="94.83"/>
-              <line x1="50" y1="50" x2="26.97" y2="9.55"/><line x1="50" y1="50" x2="73.03" y2="90.45"/>
-              <line x1="50" y1="50" x2="9.55" y2="26.97"/><line x1="50" y1="50" x2="90.45" y2="73.03"/>
-              <line x1="50" y1="50" x2="5.17" y2="38.1"/><line x1="50" y1="50" x2="94.83" y2="61.9"/>
-              <line x1="50" y1="50" x2="5.17" y2="61.9"/><line x1="50" y1="50" x2="94.83" y2="38.1"/>
-              <line x1="50" y1="50" x2="9.55" y2="73.03"/><line x1="50" y1="50" x2="90.45" y2="26.97"/>
-              <line x1="50" y1="50" x2="26.97" y2="90.45"/><line x1="50" y1="50" x2="73.03" y2="9.55"/>
-              <line x1="50" y1="50" x2="38.1" y2="94.83"/><line x1="50" y1="50" x2="61.9" y2="5.17"/>
-            </g>
-          </svg>
-          <span class="brand-text">INDIA</span>
-          <span class="brand-subtext">1498 – 1961</span>
-        </a>
-      </div>
-
-      <!-- Right: Search, Dossier Actions, Tanpura Audio -->
-      <div class="nav-right">
-        <!-- Search Input -->
-        <div class="nav-search-wrapper">
-          <svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2">
-            <circle cx="11" cy="11" r="8"></circle>
-            <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
-          </svg>
-          <input type="text" id="global-search-input" placeholder="Search event, battle, treaty, person..." autocomplete="off">
-          <div id="search-results-dropdown" class="search-results-dropdown"></div>
+  <header class="cinematic-header">
+    <!-- Left: Brand Emblem & Title -->
+    <div class="header-left">
+      <a href="#" class="brand-badge" title="Chronica Imperii Indici">
+        <!-- Ashoka Chakra 24-spoke SVG -->
+        <svg class="brand-chakra" viewBox="0 0 100 100" fill="none" stroke="currentColor">
+          <circle cx="50" cy="50" r="46" stroke-width="3"/>
+          <circle cx="50" cy="50" r="14" stroke-width="2.5"/>
+          <circle cx="50" cy="50" r="5" fill="currentColor"/>
+          <g stroke-width="1.8">
+            <line x1="50" y1="50" x2="50" y2="4"/><line x1="50" y1="50" x2="50" y2="96"/>
+            <line x1="50" y1="50" x2="4" y2="50"/><line x1="50" y1="50" x2="96" y2="50"/>
+            <line x1="50" y1="50" x2="17.47" y2="17.47"/><line x1="50" y1="50" x2="82.53" y2="82.53"/>
+            <line x1="50" y1="50" x2="17.47" y2="82.53"/><line x1="50" y1="50" x2="82.53" y2="17.47"/>
+            <line x1="50" y1="50" x2="38.1" y2="5.17"/><line x1="50" y1="50" x2="61.9" y2="94.83"/>
+            <line x1="50" y1="50" x2="26.97" y2="9.55"/><line x1="50" y1="50" x2="73.03" y2="90.45"/>
+            <line x1="50" y1="50" x2="9.55" y2="26.97"/><line x1="50" y1="50" x2="90.45" y2="73.03"/>
+            <line x1="50" y1="50" x2="5.17" y2="38.1"/><line x1="50" y1="50" x2="94.83" y2="61.9"/>
+            <line x1="50" y1="50" x2="5.17" y2="61.9"/><line x1="50" y1="50" x2="94.83" y2="38.1"/>
+            <line x1="50" y1="50" x2="9.55" y2="73.03"/><line x1="50" y1="50" x2="90.45" y2="26.97"/>
+            <line x1="50" y1="50" x2="26.97" y2="90.45"/><line x1="50" y1="50" x2="73.03" y2="9.55"/>
+            <line x1="50" y1="50" x2="38.1" y2="94.83"/><line x1="50" y1="50" x2="61.9" y2="5.17"/>
+          </g>
+        </svg>
+        <div class="brand-title-wrap">
+          <span class="brand-main">CHRONICA IMPERII INDICI</span>
+          <span class="brand-dates">1498 – 1961</span>
         </div>
+      </a>
+    </div>
 
-        <!-- Dossiers Navigation Buttons -->
-        <button id="btn-open-wars-modal" class="nav-action-btn" title="Major Wars &amp; Battles (1746 – 1961)">
-          <span>⚔️ Wars</span>
+    <!-- Center: Chapter Quick-Selector Dropdown -->
+    <div class="header-center">
+      <div style="position:relative;">
+        <button id="chapter-selector-btn" class="chapter-selector-btn" title="Jump to Historical Chapter">
+          <span id="header-chapter-title">Chapter 01: Arrivals &amp; Forts (1498)</span>
+          <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2">
+            <polyline points="6 9 12 15 18 9"></polyline>
+          </svg>
         </button>
-
-        <button id="btn-open-treaties-modal" class="nav-action-btn" title="Historic Treaties &amp; Accords">
-          <span>📜 Treaties</span>
-        </button>
-
-        <button id="btn-open-famines-modal" class="nav-action-btn" title="The Great Colonial Famines (35M+ Dead)">
-          <span>🌾 Famines</span>
-        </button>
-
-        <button id="btn-open-personae-modal" class="nav-action-btn" title="Kings, Queens, Viceroys &amp; Freedom Fighters">
-          <span>👑 Personae</span>
-        </button>
-
-        <button id="btn-open-drain-modal" class="nav-action-btn" title="The $45 Trillion Drain of Wealth Study">
-          <span>💰 $45T Drain</span>
-        </button>
-
-        <!-- Meditative Classical Tanpura Drone -->
-        <button id="btn-audio-toggle" class="nav-action-btn" title="Toggle Meditative Tanpura Soundscape">
-          <div class="drone-wave-bars">
-            <span></span><span></span><span></span>
-          </div>
-          <span>Tanpura</span>
-        </button>
+        <div id="chapter-dropdown-menu" class="chapter-dropdown-menu">
+          <!-- Populated by JS -->
+        </div>
       </div>
     </div>
 
-    <!-- Editorial Centered Chapter Header (Stationary, Single-Line Title) -->
-    <div class="replica-header-center">
-      <p class="replica-eyebrow" id="top-eyebrow-text">INDIA'S COLONIAL PAST &bull; CHAPTER 01: ARRIVALS &amp; FORTS (1498 – 1744)</p>
-      <h1 class="replica-main-title" id="top-title-text">01 · Vasco da Gama Lands at Calicut (1498)</h1>
+    <!-- Right: Global Search, Dossier Buttons, Audio, Theme Toggle -->
+    <div class="header-right">
+      <!-- Search Input -->
+      <div class="nav-search-box">
+        <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2">
+          <circle cx="11" cy="11" r="8"></circle>
+          <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+        </svg>
+        <input type="text" id="global-search-input" placeholder="Search event, figure... (⌘K)" autocomplete="off">
+        <div id="search-results-popover" class="search-results-popover"></div>
+      </div>
+
+      <!-- Dossier Launchers -->
+      <button id="btn-open-wars-modal" class="dossier-nav-btn" title="Major Wars &amp; Battles (16)">
+        <span>⚔️ Wars</span>
+      </button>
+
+      <button id="btn-open-treaties-modal" class="dossier-nav-btn" title="Historic Treaties Archive (13)">
+        <span>📜 Treaties</span>
+      </button>
+
+      <button id="btn-open-famines-modal" class="dossier-nav-btn" title="The Great Colonial Famines (10)">
+        <span>🌾 Famines</span>
+      </button>
+
+      <button id="btn-open-personae-modal" class="dossier-nav-btn" title="Dramatis Personae Biographies (43)">
+        <span>👑 Personae</span>
+      </button>
+
+      <button id="btn-open-drain-modal" class="dossier-nav-btn" title="The $45 Trillion Drain of Wealth Study">
+        <span>💰 $45T Drain</span>
+      </button>
+
+      <!-- Classical Indian Tanpura Drone -->
+      <button id="btn-audio-toggle" class="dossier-nav-btn" title="Toggle Classical Tanpura Soundscape">
+        <div class="audio-bars">
+          <span></span><span></span><span></span>
+        </div>
+        <span>Tanpura</span>
+      </button>
+
+      <!-- Theme Switcher (Light / Dark) -->
+      <button id="theme-toggle-btn" class="theme-toggle-btn" title="Toggle Light/Dark Theme">
+        <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2">
+          <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/>
+        </svg>
+      </button>
     </div>
   </header>
 
   <!-- =========================================================================
-       Main Exact Replica Layout
+       2. Dual-Wing Cinematic Presentation Stage (Viewport-Locked)
        ========================================================================= -->
-  <main class="replica-wrapper">
-    <div class="replica-stage-row">
+  <main class="cinematic-stage">
+    
+    <!-- Left Wing: Story Exhibition Slide Card -->
+    <article class="slide-story-card">
       
-      <!-- Left Floating Sidebar Dock (Stationary 440px Pill) -->
-      <aside class="replica-dock-sidebar" aria-label="Milestone Scrubber &amp; Cinematic Tour">
+      <!-- Slide Top Metadata Row (Stationary) -->
+      <div class="story-meta-row">
+        <div class="meta-badges-group">
+          <span id="slide-cat-badge" class="slide-category-pill">
+            <span>🚢</span> MARITIME DISCOVERY
+          </span>
+          <span id="slide-chapter-tag" class="slide-chapter-label">
+            CHAPTER 01 &bull; 1498–1744
+          </span>
+        </div>
+        <div id="slide-number-badge" class="slide-counter-badge">
+          SLIDE 01 / 63
+        </div>
+      </div>
+
+      <!-- Slide Main Headline (Stationary) -->
+      <h1 id="slide-title-text" class="slide-main-headline">
+        Vasco da Gama Lands at Calicut (1498)
+      </h1>
+
+      <!-- Geography & Date Bar (Stationary) -->
+      <div id="slide-date-location" class="story-geography-bar">
+        <span>📅 May 20, 1498</span>
+        <span>&bull;</span>
+        <span>📍 Kappad Beach, Calicut (Kozhikode), Kerala</span>
+      </div>
+
+      <!-- Scrollable Narrative Body Area -->
+      <div class="story-scroll-area">
         
-        <!-- Black Circular Play / Pause Button -->
-        <button id="btn-dock-tour" class="dock-play-circle" title="Toggle Cinematic Tour (Spacebar)" aria-label="Play Cinematic Tour">
-          <!-- Pause Icon (shown when playing) -->
-          <svg id="icon-tour-pause" class="hidden" viewBox="0 0 24 24" width="14" height="14" fill="currentColor">
-            <rect x="7" y="5" width="3.2" height="14" rx="1.6"></rect>
-            <rect x="13.8" y="5" width="3.2" height="14" rx="1.6"></rect>
-          </svg>
-          <!-- Play Icon (shown by default) -->
-          <svg id="icon-tour-play" viewBox="0 0 24 24" width="14" height="14" fill="currentColor">
-            <polygon points="8,5 19,12 8,19"></polygon>
-          </svg>
-        </button>
+        <!-- Primary Narrative Text -->
+        <p id="slide-narrative-text" class="story-narrative-paragraph">
+          <!-- Populated by JS -->
+        </p>
 
-        <!-- Vertical Timeline Track -->
-        <div class="dock-timeline-container">
-          <div class="dock-vertical-rail">
-            <div id="dock-progress-fill" class="dock-vertical-fill"></div>
+        <!-- Quote Box -->
+        <div class="slide-quote-card">
+          <div id="slide-quote-text" class="quote-body-text">
+            "We have come to seek Christians and spices."
           </div>
-
-          <!-- Vertical list of 5 milestones in window -->
-          <div id="dock-steps-list" class="dock-steps-list">
-            <!-- Dynamically populated by scroller.js -->
+          <div id="slide-quote-cite" class="quote-author-cite">
+            &mdash; Vasco da Gama's crew upon arriving in Calicut (1498)
           </div>
         </div>
 
-        <!-- Bottom Timer / Counter (e.g. 01 / 63 or 0:11 / 0:45) -->
-        <div id="dock-timer-display" class="dock-timer-text">
-          01 / 63
+        <!-- Inline Dossier Jump Pill (if event connects to war, treaty, famine, or drain) -->
+        <div id="slide-dossier-jump" class="dossier-inline-action">
+          <!-- Populated by JS -->
         </div>
 
-      </aside>
-
-      <!-- Center & Right Column: Panoramic Media Frame + Dotted Editorial Text -->
-      <div class="replica-center-column">
-        
-        <!-- Panoramic Rounded Media Frame -->
-        <div class="replica-media-card">
-          <div id="map"></div>
-
-          <!-- Floating Map HUD Overlay -->
-          <div class="media-hud-overlay">
-            <div class="media-hud-tags">
-              <span class="media-pill" id="hud-badge-tag">MARITIME DISCOVERY 🚢</span>
-              <span class="media-pill" id="hud-period-tag">MAY 20, 1498 · CALICUT, KERALA</span>
-            </div>
-
-            <div class="media-hud-controls">
-              <button id="btn-toggle-boundaries" class="hud-pill-btn active" title="Toggle Territorial Boundaries">Boundaries</button>
-              <button id="btn-toggle-sites" class="hud-pill-btn active" title="Toggle Event Markers">Markers</button>
-              <button id="btn-toggle-routes" class="hud-pill-btn active" title="Toggle Historical Routes">Routes</button>
-              <button id="btn-toggle-theme" class="hud-pill-btn" title="Switch Map Theme">Theme</button>
-            </div>
+        <!-- Key Historical Figures & Actors -->
+        <div>
+          <div class="figures-section-title" style="margin-bottom:8px;">KEY HISTORICAL FIGURES &amp; ACTORS</div>
+          <div id="slide-figures-chips" class="figures-chips-flow">
+            <!-- Populated by JS -->
           </div>
-
-          <!-- Prev / Next Navigation Floating Arrows -->
-          <button id="btn-stage-prev" class="stage-nav-arrow arrow-left" title="Previous Milestone (Arrow Up / Left)">
-            <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2.5">
-              <polyline points="15 18 9 12 15 6"/>
-            </svg>
-          </button>
-          <button id="btn-stage-next" class="stage-nav-arrow arrow-right" title="Next Milestone (Arrow Down / Right)">
-            <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2.5">
-              <polyline points="9 18 15 12 9 6"/>
-            </svg>
-          </button>
         </div>
 
-        <!-- Below-Media Editorial Reading Section -->
-        <section class="replica-editorial-block">
-          
-          <!-- Primary Paragraph with Signature Dotted Underlines -->
-          <div class="editorial-text-wrapper">
-            <p class="replica-dotted-paragraph" id="editorial-main-paragraph">
-              <!-- Dynamically populated with event narrative and signature dotted underlines -->
-            </p>
-          </div>
-
-          <!-- Citation Line -->
-          <div class="replica-citation-line" id="editorial-citation-line">
-            01 &bull; Vasco da Gama Lands at Calicut &bull; Kappad Beach, Calicut (1498)
-          </div>
-
-          <!-- Expandable Deep Dive: Historical Analysis, Quote, Figures & Milestones -->
-          <div class="replica-deep-dive">
-            <details class="deep-dive-details" open>
-              <summary class="deep-dive-summary">
-                <span>Historical Analysis, Primary Record &amp; Actors</span>
-                <svg class="summary-chevron" viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2">
-                  <polyline points="6 9 12 15 18 9"/>
-                </svg>
-              </summary>
-
-              <div class="deep-dive-content">
-                <!-- Quote Box -->
-                <blockquote class="editorial-card-quote">
-                  <p class="quote-text" id="quote-text-body">
-                    "We have come to seek Christians and spices."
-                  </p>
-                  <footer class="quote-cite" id="quote-cite-author">
-                    &mdash; Vasco da Gama's crew upon landing in Calicut (1498)
-                  </footer>
-                </blockquote>
-
-                <!-- Direct Dossier Jump Pill (if milestone connects to war, treaty, famine, or drain) -->
-                <div id="editorial-dossier-jump" style="margin-top:-4px;"></div>
-
-                <!-- Key Historical Figures & Actors Chips -->
-                <div class="deep-dive-subheading">Key Historical Figures &amp; Actors</div>
-                <div class="sites-chips-flow" id="editorial-figures-chips">
-                  <!-- Populated by JS -->
-                </div>
-
-                <!-- Geopolitical Reverberations & Consequences -->
-                <div class="deep-dive-subheading">Geopolitical Reverberations &amp; Milestones</div>
-                <ul class="highlights-flow-list" id="editorial-impacts-list">
-                  <!-- Populated by JS -->
-                </ul>
-              </div>
-            </details>
-          </div>
-
-        </section>
+        <!-- Geopolitical Reverberations -->
+        <div>
+          <div class="figures-section-title" style="margin-bottom:8px;">GEOPOLITICAL REVERBERATIONS</div>
+          <ul id="slide-impacts-list" class="reverberations-list">
+            <!-- Populated by JS -->
+          </ul>
+        </div>
 
       </div>
-    </div>
+
+    </article>
+
+    <!-- Right Wing: Panoramic Cartography Viewport Card -->
+    <section class="slide-map-card">
+      <div id="map"></div>
+
+      <!-- Top Map HUD Overlay -->
+      <div class="map-hud-top">
+        <div class="map-hud-coords">
+          <span id="hud-coords-badge" class="hud-glass-badge">
+            11.385° N, 75.718° E &bull; Calicut, Kerala
+          </span>
+        </div>
+
+        <div class="map-hud-actions">
+          <button id="btn-toggle-boundaries" class="hud-ctrl-btn active" title="Toggle Territorial Polygons">Boundaries</button>
+          <button id="btn-toggle-routes" class="hud-ctrl-btn active" title="Toggle Historic Routes">Routes</button>
+          <button id="btn-toggle-sites" class="hud-ctrl-btn active" title="Toggle Event Beacons">Markers</button>
+          <button id="btn-toggle-map-theme" class="hud-ctrl-btn" title="Cycle Map Themes">Voyager</button>
+        </div>
+      </div>
+
+      <!-- Floating Nav Paging Chevrons -->
+      <button id="btn-stage-prev" class="map-nav-arrow arrow-prev" title="Previous Slide (← / ↑)">
+        <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2.5">
+          <polyline points="15 18 9 12 15 6"></polyline>
+        </svg>
+      </button>
+
+      <button id="btn-stage-next" class="map-nav-arrow arrow-next" title="Next Slide (→ / ↓)">
+        <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2.5">
+          <polyline points="9 18 15 12 9 6"></polyline>
+        </svg>
+      </button>
+
+      <!-- Bottom Map Legend -->
+      <div class="map-hud-bottom">
+        <span id="hud-era-overlay-name" class="legend-glass-pill">
+          Territory Layer: 1700 Mughal Zenith
+        </span>
+      </div>
+
+    </section>
+
   </main>
 
   <!-- =========================================================================
-       1. Major Wars & Battles Dossier Modal
+       3. Bottom Panoramic Timeline & Slide Scrubber Bar (78px)
        ========================================================================= -->
+  <footer class="cinematic-scrubber">
+    
+    <!-- Scrubber Left: Tour Play/Pause, Step Arrows, Counters -->
+    <div class="scrubber-left">
+      <button id="btn-dock-tour" class="tour-play-circle" title="Toggle Presentation Tour (Spacebar)">
+        <!-- Play Icon -->
+        <svg id="icon-tour-play" viewBox="0 0 24 24" width="16" height="16" fill="currentColor">
+          <polygon points="8,5 19,12 8,19"></polygon>
+        </svg>
+        <!-- Pause Icon -->
+        <svg id="icon-tour-pause" class="hidden" viewBox="0 0 24 24" width="16" height="16" fill="currentColor">
+          <rect x="7" y="5" width="3.2" height="14" rx="1.6"></rect>
+          <rect x="13.8" y="5" width="3.2" height="14" rx="1.6"></rect>
+        </svg>
+      </button>
+
+      <button id="btn-scrub-prev" class="tour-step-btn" title="Previous Slide">
+        <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.5">
+          <polyline points="15 18 9 12 15 6"></polyline>
+        </svg>
+      </button>
+
+      <button id="btn-scrub-next" class="tour-step-btn" title="Next Slide">
+        <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.5">
+          <polyline points="9 18 15 12 9 6"></polyline>
+        </svg>
+      </button>
+
+      <div class="scrubber-count-wrap">
+        <span id="scrub-slide-tracker" class="scrub-index-display">01 / 63</span>
+        <span id="scrub-timer-counter" class="scrub-timer-display">Presentation Tour</span>
+      </div>
+    </div>
+
+    <!-- Scrubber Center: Chapter Tabs & 63 Milestone Pips Rail -->
+    <div class="scrubber-center">
+      <!-- 8 Chapter Tabs along top of rail -->
+      <div id="chapter-ribbon-tabs" class="chapter-ribbon-tabs">
+        <!-- Rendered by JS -->
+      </div>
+
+      <!-- Scrub Track Rail with 63 Pips -->
+      <div id="scrub-track-rail" class="scrub-track-rail" title="Click anywhere along 451-year timeline to jump">
+        <div id="scrub-progress-fill" class="scrub-track-fill"></div>
+        <div id="scrub-pips-container" class="scrub-pips-container">
+          <!-- 63 Pips rendered by JS -->
+        </div>
+      </div>
+    </div>
+
+    <!-- Scrubber Right: Keyboard Helpers -->
+    <div class="scrubber-right">
+      <div class="keyboard-hint-pill">
+        <kbd>&larr;</kbd> <kbd>&rarr;</kbd> Paging &bull; <kbd>Space</kbd> Tour
+      </div>
+    </div>
+
+  </footer>
+
+  <!-- =========================================================================
+       4. Dossier Modals (Wars, Treaties, Famines, Personae, Drain)
+       ========================================================================= -->
+
+  <!-- 1. Major Wars & Battles Modal -->
   <div id="wars-modal" class="modal-backdrop" role="dialog" aria-modal="true" aria-labelledby="wars-modal-title">
     <div class="modal-dialog">
       <button class="modal-close-btn" aria-label="Close Modal">
@@ -272,9 +338,7 @@
     </div>
   </div>
 
-  <!-- =========================================================================
-       2. Historic Treaties Archive Modal
-       ========================================================================= -->
+  <!-- 2. Historic Treaties Archive Modal -->
   <div id="treaties-modal" class="modal-backdrop" role="dialog" aria-modal="true" aria-labelledby="treaties-modal-title">
     <div class="modal-dialog">
       <button class="modal-close-btn" aria-label="Close Modal">
@@ -298,9 +362,7 @@
     </div>
   </div>
 
-  <!-- =========================================================================
-       3. Great Colonial Famines Register Modal
-       ========================================================================= -->
+  <!-- 3. Great Colonial Famines Register Modal -->
   <div id="famines-modal" class="modal-backdrop" role="dialog" aria-modal="true" aria-labelledby="famines-modal-title">
     <div class="modal-dialog">
       <button class="modal-close-btn" aria-label="Close Modal">
@@ -324,9 +386,7 @@
     </div>
   </div>
 
-  <!-- =========================================================================
-       4. Dramatis Personae Modal (Kings, Queens, Viceroys & Freedom Fighters)
-       ========================================================================= -->
+  <!-- 4. Dramatis Personae Modal -->
   <div id="personae-modal" class="modal-backdrop" role="dialog" aria-modal="true" aria-labelledby="personae-modal-title">
     <div class="modal-dialog" style="max-width: 920px;">
       <button class="modal-close-btn" aria-label="Close Modal">
@@ -356,9 +416,7 @@
     </div>
   </div>
 
-  <!-- =========================================================================
-       5. $45 Trillion Economic Drain of Wealth Modal
-       ========================================================================= -->
+  <!-- 5. $45 Trillion Economic Drain of Wealth Modal -->
   <div id="drain-modal" class="modal-backdrop" role="dialog" aria-modal="true" aria-labelledby="drain-modal-title">
     <div class="modal-dialog" style="max-width: 760px;">
       <button class="modal-close-btn" aria-label="Close Modal">
@@ -380,10 +438,10 @@
 
   <!-- Application Scripts -->
   <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
-  <script src="js/data.js?v=2.1.0"></script>
-  <script src="js/audio.js?v=2.1.0"></script>
-  <script src="js/map.js?v=2.1.0"></script>
-  <script src="js/scroller.js?v=2.1.0"></script>
-  <script src="js/app.js?v=2.1.0"></script>
+  <script src="js/data.js?v=3.0.0"></script>
+  <script src="js/audio.js?v=3.0.0"></script>
+  <script src="js/map.js?v=3.0.0"></script>
+  <script src="js/scroller.js?v=3.0.0"></script>
+  <script src="js/app.js?v=3.0.0"></script>
 </body>
 </html>
