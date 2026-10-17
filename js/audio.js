@@ -1,159 +1,171 @@
-// Web Audio API Synthesizer for historical atmosphere & subtle UI sound effects
-class SoundEngine {
+/**
+ * INDIA: CHRONICA IMPERII INDICI
+ * Ambient Audio Synthesis Engine (Pure Web Audio API)
+ * Generates meditative Indian Classical Tanpura harmonic drone & milestone transition chimes.
+ * Zero external audio files required, zero latency, runs offline.
+ */
+
+class AmbientSoundEngine {
   constructor() {
     this.ctx = null;
-    this.isMuted = true;
-    this.droneGain = null;
-    this.droneOsc1 = null;
-    this.droneOsc2 = null;
+    this.isPlaying = false;
+    this.masterGain = null;
+    this.tanpuraNodes = [];
+    this.lfo = null;
+    this.lfoGain = null;
+    this.baseFreq = 138.59; // C#3 (Traditional Indian Tanpura root key - Pancham shruti)
   }
 
   init() {
-    if (!this.ctx) {
-      const AudioContext = window.AudioContext || window.webkitAudioContext;
-      if (AudioContext) {
-        this.ctx = new AudioContext();
-      }
-    }
+    if (this.ctx) return;
+    const AudioContext = window.AudioContext || window.webkitAudioContext;
+    this.ctx = new AudioContext();
+
+    this.masterGain = this.ctx.createGain();
+    this.masterGain.gain.setValueAtTime(0.001, this.ctx.currentTime);
+
+    // Reverb simulator via Convolver or multiple delays
+    this.reverbGain = this.ctx.createGain();
+    this.reverbGain.gain.setValueAtTime(0.35, this.ctx.currentTime);
+
+    // Low-pass filter for warm, soothing classical sound
+    this.filter = this.ctx.createBiquadFilter();
+    this.filter.type = "lowpass";
+    this.filter.frequency.setValueAtTime(850, this.ctx.currentTime);
+    this.filter.Q.setValueAtTime(1.5, this.ctx.currentTime);
+
+    this.masterGain.connect(this.filter);
+    this.filter.connect(this.ctx.destination);
   }
 
-  toggleSound() {
+  start() {
     this.init();
-    if (!this.ctx) return false;
-
-    if (this.ctx.state === 'suspended') {
+    if (this.ctx.state === "suspended") {
       this.ctx.resume();
     }
 
-    this.isMuted = !this.isMuted;
-    if (this.isMuted) {
-      this.stopDrone();
+    if (this.isPlaying) return;
+
+    const now = this.ctx.currentTime;
+    this.masterGain.gain.cancelScheduledValues(now);
+    this.masterGain.gain.setValueAtTime(this.masterGain.gain.value, now);
+    this.masterGain.gain.linearRampToValueAtTime(0.22, now + 2.5);
+
+    this.startTanpuraDrone();
+    this.isPlaying = true;
+  }
+
+  stop() {
+    if (!this.isPlaying || !this.ctx) return;
+    const now = this.ctx.currentTime;
+    this.masterGain.gain.cancelScheduledValues(now);
+    this.masterGain.gain.setValueAtTime(this.masterGain.gain.value, now);
+    this.masterGain.gain.linearRampToValueAtTime(0.001, now + 1.5);
+
+    setTimeout(() => {
+      this.stopTanpuraDrone();
+      this.isPlaying = false;
+    }, 1600);
+  }
+
+  toggle() {
+    if (this.isPlaying) {
+      this.stop();
+      return false;
     } else {
-      this.startDrone();
-      this.playChime(523.25); // C5 notification
-    }
-    return !this.isMuted;
-  }
-
-  startDrone() {
-    if (this.isMuted || !this.ctx) return;
-    try {
-      this.stopDrone();
-      const now = this.ctx.currentTime;
-
-      // Gentle Tanpura / Ambient Indian Classical drone frequency (D2 / A2)
-      this.droneOsc1 = this.ctx.createOscillator();
-      this.droneOsc2 = this.ctx.createOscillator();
-      this.droneGain = this.ctx.createGain();
-
-      const filter = this.ctx.createBiquadFilter();
-      filter.type = 'lowpass';
-      filter.frequency.setValueAtTime(320, now);
-
-      this.droneOsc1.type = 'triangle';
-      this.droneOsc1.frequency.setValueAtTime(146.83, now); // D3
-
-      this.droneOsc2.type = 'sine';
-      this.droneOsc2.frequency.setValueAtTime(220.00, now); // A3
-
-      this.droneGain.gain.setValueAtTime(0.001, now);
-      this.droneGain.gain.exponentialRampToValueAtTime(0.04, now + 3);
-
-      this.droneOsc1.connect(filter);
-      this.droneOsc2.connect(filter);
-      filter.connect(this.droneGain);
-      this.droneGain.connect(this.ctx.destination);
-
-      this.droneOsc1.start();
-      this.droneOsc2.start();
-    } catch (e) {
-      console.warn("Audio drone error", e);
+      this.start();
+      return true;
     }
   }
 
-  stopDrone() {
-    if (this.droneGain && this.ctx) {
+  startTanpuraDrone() {
+    this.stopTanpuraDrone();
+
+    // Traditional 4-string Tanpura tuning:
+    // 1st string: Pa (Fifth, 3/2 = ~207.89 Hz)
+    // 2nd string: Sa (Octave tonic, 2/1 = ~277.18 Hz)
+    // 3rd string: Sa (Octave tonic, 2/1 = ~277.18 Hz)
+    // 4th string: Kharaj Sa (Root tonic, 1/1 = ~138.59 Hz)
+    const stringFreqs = [
+      this.baseFreq * 1.5,     // Pa (G#3)
+      this.baseFreq * 2.0,     // Tar Sa (C#4)
+      this.baseFreq * 2.003,   // Slight detune for authentic shimmering acoustic jivari
+      this.baseFreq * 1.0      // Mandra Sa (C#3)
+    ];
+
+    const stringGains = [0.16, 0.18, 0.17, 0.28];
+
+    // LFO for slow meditative acoustic breathing
+    this.lfo = this.ctx.createOscillator();
+    this.lfo.frequency.setValueAtTime(0.12, this.ctx.currentTime); // ~8 sec breathing cycle
+    this.lfoGain = this.ctx.createGain();
+    this.lfoGain.gain.setValueAtTime(0.04, this.ctx.currentTime);
+    this.lfo.connect(this.lfoGain);
+    this.lfo.start();
+
+    this.tanpuraNodes = stringFreqs.map((freq, idx) => {
+      const osc = this.ctx.createOscillator();
+      osc.type = idx === 3 ? "sawtooth" : "triangle";
+      osc.frequency.setValueAtTime(freq, this.ctx.currentTime);
+
+      const gain = this.ctx.createGain();
+      gain.gain.setValueAtTime(stringGains[idx], this.ctx.currentTime);
+
+      // Connect LFO for gentle pulsation
+      this.lfoGain.connect(gain.gain);
+
+      osc.connect(gain);
+      gain.connect(this.masterGain);
+      osc.start();
+
+      return { osc, gain };
+    });
+  }
+
+  stopTanpuraDrone() {
+    if (this.tanpuraNodes.length) {
+      this.tanpuraNodes.forEach(node => {
+        try {
+          node.osc.stop();
+          node.osc.disconnect();
+        } catch (e) {}
+      });
+      this.tanpuraNodes = [];
+    }
+    if (this.lfo) {
       try {
-        const now = this.ctx.currentTime;
-        this.droneGain.gain.setValueAtTime(this.droneGain.gain.value, now);
-        this.droneGain.gain.exponentialRampToValueAtTime(0.0001, now + 0.8);
-        setTimeout(() => {
-          if (this.droneOsc1) { this.droneOsc1.stop(); this.droneOsc1.disconnect(); }
-          if (this.droneOsc2) { this.droneOsc2.stop(); this.droneOsc2.disconnect(); }
-          this.droneOsc1 = null;
-          this.droneOsc2 = null;
-        }, 900);
+        this.lfo.stop();
+        this.lfo.disconnect();
       } catch (e) {}
+      this.lfo = null;
     }
   }
 
-  // Play pleasant chime on event selection or era transition
-  playChime(freq = 440) {
-    if (this.isMuted || !this.ctx) return;
-    try {
-      const now = this.ctx.currentTime;
+  // Play subtle bell/temple chime upon changing milestone
+  playEraChime() {
+    if (!this.isPlaying || !this.ctx) return;
+    const now = this.ctx.currentTime;
+
+    const chimeFreqs = [554.37, 830.61, 1108.73]; // C#5, G#5, C#6
+    chimeFreqs.forEach((f, i) => {
       const osc = this.ctx.createOscillator();
+      osc.type = "sine";
+      osc.frequency.setValueAtTime(f, now + i * 0.05);
+
       const gain = this.ctx.createGain();
-
-      osc.type = 'sine';
-      osc.frequency.setValueAtTime(freq, now);
-      osc.frequency.exponentialRampToValueAtTime(freq * 1.5, now + 0.3);
-
-      gain.gain.setValueAtTime(0.08, now);
-      gain.gain.exponentialRampToValueAtTime(0.001, now + 0.6);
+      gain.gain.setValueAtTime(0.001, now);
+      gain.gain.linearRampToValueAtTime(0.06 / (i + 1), now + i * 0.05 + 0.02);
+      gain.gain.exponentialRampToValueAtTime(0.0001, now + 3.0 + i * 0.2);
 
       osc.connect(gain);
-      gain.connect(this.ctx.destination);
+      gain.connect(this.filter);
 
-      osc.start(now);
-      osc.stop(now + 0.6);
-    } catch (e) {}
-  }
-
-  // Play subtle historic battle drum strike
-  playDrum() {
-    if (this.isMuted || !this.ctx) return;
-    try {
-      const now = this.ctx.currentTime;
-      const osc = this.ctx.createOscillator();
-      const gain = this.ctx.createGain();
-
-      osc.frequency.setValueAtTime(110, now);
-      osc.frequency.exponentialRampToValueAtTime(30, now + 0.25);
-
-      gain.gain.setValueAtTime(0.15, now);
-      gain.gain.exponentialRampToValueAtTime(0.001, now + 0.35);
-
-      osc.connect(gain);
-      gain.connect(this.ctx.destination);
-
-      osc.start(now);
-      osc.stop(now + 0.35);
-    } catch (e) {}
-  }
-
-  // Subtle page turn click
-  playClick() {
-    if (this.isMuted || !this.ctx) return;
-    try {
-      const now = this.ctx.currentTime;
-      const osc = this.ctx.createOscillator();
-      const gain = this.ctx.createGain();
-
-      osc.type = 'triangle';
-      osc.frequency.setValueAtTime(800, now);
-      osc.frequency.exponentialRampToValueAtTime(200, now + 0.05);
-
-      gain.gain.setValueAtTime(0.04, now);
-      gain.gain.exponentialRampToValueAtTime(0.001, now + 0.05);
-
-      osc.connect(gain);
-      gain.connect(this.ctx.destination);
-
-      osc.start(now);
-      osc.stop(now + 0.05);
-    } catch (e) {}
+      osc.start(now + i * 0.05);
+      osc.stop(now + 3.5);
+    });
   }
 }
 
-window.soundEngine = new SoundEngine();
+if (typeof window !== "undefined") {
+  window.ambientAudio = new AmbientSoundEngine();
+}

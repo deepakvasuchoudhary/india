@@ -2259,3 +2259,15 @@ const MAP_ERA_PRESETS = {
     ]
   }
 };
+
+// Global window attachments
+if (typeof window !== "undefined") {
+  window.HISTORICAL_ERAS = HISTORICAL_ERAS;
+  window.TIMELINE_EVENTS = TIMELINE_EVENTS;
+  window.MAJOR_WARS = MAJOR_WARS;
+  window.TREATIES_ARCHIVE = TREATIES_ARCHIVE;
+  window.FAMINES_REGISTER = FAMINES_REGISTER;
+  window.DRAMATIS_PERSONAE = DRAMATIS_PERSONAE;
+  window.ECONOMIC_DRAIN_DATA = ECONOMIC_DRAIN_DATA;
+  window.MAP_ERA_PRESETS = MAP_ERA_PRESETS;
+}
