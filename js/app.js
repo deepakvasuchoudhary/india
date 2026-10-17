@@ -143,6 +143,21 @@ class Application {
       });
     }
 
+    // Dossiers Hub Dropdown Toggle
+    const hubBtn = document.getElementById("btn-dossiers-hub");
+    const hubDropdown = document.getElementById("dossiers-menu-dropdown");
+    if (hubBtn && hubDropdown) {
+      hubBtn.addEventListener("click", (e) => {
+        e.stopPropagation();
+        hubDropdown.classList.toggle("active");
+      });
+      document.addEventListener("click", (e) => {
+        if (!e.target.closest(".dossiers-dropdown-wrapper")) {
+          hubDropdown.classList.remove("active");
+        }
+      });
+    }
+
     // Modal Opening Buttons
     const bindModalBtn = (btnId, modalId) => {
       const btn = document.getElementById(btnId);
@@ -201,6 +216,8 @@ class Application {
   }
 
   openModal(modalId) {
+    const hubDropdown = document.getElementById("dossiers-menu-dropdown");
+    if (hubDropdown) hubDropdown.classList.remove("active");
     const modal = document.getElementById(modalId);
     if (modal) {
       document.querySelectorAll(".modal-backdrop.open").forEach(m => m.classList.remove("open"));

@@ -41,29 +41,26 @@ class HistoricalMapController {
       scrollWheelZoom: false
     });
 
-    // Zoom control at bottom right
-    L.control.zoom({ position: "bottomright" }).addTo(this.map);
-    L.control.attribution({
-      position: "bottomleft",
-      prefix: "<span>Carto &copy; OpenStreetMap &copy; Chronica Imperii Indici</span>"
-    }).addTo(this.map);
+    // Clean map controls - No colliding attribution overlays
+    // L.control.zoom is disabled or placed unobtrusively without colliding with HUD
 
-    // Tile Themes
+    // Tile Themes (Esri World Topo & Canvas - Zero Watermarks, No API Key Required)
     this.tileLayers = {
-      voyager: L.tileLayer("https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png", {
-        subdomains: ["a", "b", "c", "d"],
+      voyager: L.tileLayer("https://server.arcgisonline.com/ArcGIS/rest/services/World_Topo_Map/MapServer/tile/{z}/{y}/{x}", {
         maxZoom: 18,
-        attribution: "CartoDB Voyager"
+        attribution: "Esri &copy; OpenStreetMap"
       }),
-      dark: L.tileLayer("https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png", {
-        subdomains: ["a", "b", "c", "d"],
-        maxZoom: 18,
-        attribution: "CartoDB Dark"
+      dark: L.tileLayer("https://server.arcgisonline.com/ArcGIS/rest/services/Canvas/World_Dark_Gray_Base/MapServer/tile/{z}/{y}/{x}", {
+        maxZoom: 16,
+        attribution: "Esri &copy; OpenStreetMap"
       }),
-      light: L.tileLayer("https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png", {
-        subdomains: ["a", "b", "c", "d"],
+      light: L.tileLayer("https://server.arcgisonline.com/ArcGIS/rest/services/Canvas/World_Light_Gray_Base/MapServer/tile/{z}/{y}/{x}", {
+        maxZoom: 16,
+        attribution: "Esri &copy; OpenStreetMap"
+      }),
+      satellite: L.tileLayer("https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}", {
         maxZoom: 18,
-        attribution: "CartoDB Light"
+        attribution: "Esri World Imagery"
       })
     };
 

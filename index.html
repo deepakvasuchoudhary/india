@@ -80,26 +80,37 @@
         <div id="search-results-popover" class="search-results-popover"></div>
       </div>
 
-      <!-- Dossier Launchers -->
-      <button id="btn-open-wars-modal" class="dossier-nav-btn" title="Major Wars &amp; Battles (16)">
-        <span>⚔️ Wars</span>
-      </button>
-
-      <button id="btn-open-treaties-modal" class="dossier-nav-btn" title="Historic Treaties Archive (13)">
-        <span>📜 Treaties</span>
-      </button>
-
-      <button id="btn-open-famines-modal" class="dossier-nav-btn" title="The Great Colonial Famines (10)">
-        <span>🌾 Famines</span>
-      </button>
-
-      <button id="btn-open-personae-modal" class="dossier-nav-btn" title="Dramatis Personae Biographies (43)">
-        <span>👑 Personae</span>
-      </button>
-
-      <button id="btn-open-drain-modal" class="dossier-nav-btn" title="The $45 Trillion Drain of Wealth Study">
-        <span>💰 $45T Drain</span>
-      </button>
+      <!-- Research Dossiers Hub Dropdown (Clean, Compact, Non-Colliding) -->
+      <div class="dossiers-dropdown-wrapper">
+        <button id="btn-dossiers-hub" class="dossier-nav-btn" title="Open Research Dossiers">
+          <span>📚 Dossiers</span>
+          <svg viewBox="0 0 24 24" width="12" height="12" fill="none" stroke="currentColor" stroke-width="2">
+            <polyline points="6 9 12 15 18 9"/>
+          </svg>
+        </button>
+        <div id="dossiers-menu-dropdown" class="dossiers-menu-dropdown">
+          <div class="dossier-menu-option" id="btn-open-wars-modal">
+            <span>⚔️ Major Wars &amp; Battles</span>
+            <span class="dossier-count-badge">16</span>
+          </div>
+          <div class="dossier-menu-option" id="btn-open-treaties-modal">
+            <span>📜 Historic Treaties Archive</span>
+            <span class="dossier-count-badge">13</span>
+          </div>
+          <div class="dossier-menu-option" id="btn-open-famines-modal">
+            <span>🌾 Colonial Famines Register</span>
+            <span class="dossier-count-badge">10</span>
+          </div>
+          <div class="dossier-menu-option" id="btn-open-personae-modal">
+            <span>👑 Dramatis Personae</span>
+            <span class="dossier-count-badge">43</span>
+          </div>
+          <div class="dossier-menu-option" id="btn-open-drain-modal">
+            <span>💰 $45T Economic Drain</span>
+            <span class="dossier-count-badge">Study</span>
+          </div>
+        </div>
+      </div>
 
       <!-- Classical Indian Tanpura Drone -->
       <button id="btn-audio-toggle" class="dossier-nav-btn" title="Toggle Classical Tanpura Soundscape">

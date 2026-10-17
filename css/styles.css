@@ -10,7 +10,7 @@
   --bg-card: #ffffff;
   --bg-card-subtle: #f8fafc;
   --bg-card-hover: #f1f5f9;
-  --bg-glass: rgba(255, 255, 255, 0.88);
+  --bg-glass: rgba(255, 255, 255, 0.92);
   --border-glass: rgba(0, 0, 0, 0.08);
   --border-subtle: rgba(0, 0, 0, 0.05);
 
@@ -47,7 +47,7 @@
   --bg-card: #0f172a;
   --bg-card-subtle: #1e293b;
   --bg-card-hover: #1e293b;
-  --bg-glass: rgba(15, 23, 42, 0.88);
+  --bg-glass: rgba(15, 23, 42, 0.92);
   --border-glass: rgba(255, 255, 255, 0.09);
   --border-subtle: rgba(255, 255, 255, 0.06);
 
@@ -92,6 +92,7 @@ body {
   -moz-osx-font-smoothing: grayscale;
   line-height: 1.5;
   height: 100vh;
+  width: 100vw;
   overflow: hidden;
   display: flex;
   flex-direction: column;
@@ -103,6 +104,7 @@ body {
 
 /* ==========================================================================
    1. Fixed Top Glass Header (60px)
+   Strictly single-line, non-wrapping layout
    ========================================================================== */
 .cinematic-header {
   height: 60px;
@@ -114,15 +116,17 @@ body {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 0 24px;
+  padding: 0 20px;
   z-index: 1000;
   user-select: none;
+  gap: 12px;
 }
 
 .header-left {
   display: flex;
   align-items: center;
-  gap: 16px;
+  gap: 12px;
+  flex-shrink: 0;
 }
 
 .brand-badge {
@@ -147,10 +151,11 @@ body {
 }
 
 .brand-main {
-  font-size: 14px;
+  font-size: 13px;
   font-weight: 700;
   letter-spacing: 0.12em;
   color: var(--text-primary);
+  white-space: nowrap;
 }
 
 .brand-dates {
@@ -158,13 +163,16 @@ body {
   font-weight: 600;
   color: var(--text-muted);
   letter-spacing: 0.05em;
+  white-space: nowrap;
 }
 
-/* Chapter Quick-Select Dropdown in Header Center */
+/* Center Chapter Selector Dropdown */
 .header-center {
   display: flex;
   align-items: center;
-  gap: 8px;
+  justify-content: center;
+  flex-shrink: 1;
+  min-width: 0;
 }
 
 .chapter-selector-btn {
@@ -180,6 +188,10 @@ body {
   font-weight: 600;
   cursor: pointer;
   transition: all 0.15s ease;
+  white-space: nowrap;
+  max-width: 320px;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
 .chapter-selector-btn:hover {
@@ -248,6 +260,7 @@ body {
   display: flex;
   align-items: center;
   gap: 8px;
+  flex-shrink: 0;
 }
 
 .nav-search-box {
@@ -271,7 +284,7 @@ body {
   border-radius: var(--radius-pill);
   background: var(--bg-card-subtle);
   color: var(--text-primary);
-  width: 170px;
+  width: 150px;
   outline: none;
   transition: all 0.2s ease;
 }
@@ -279,7 +292,7 @@ body {
 .nav-search-box input:focus {
   background: var(--bg-card);
   border-color: var(--color-accent);
-  width: 220px;
+  width: 200px;
   box-shadow: 0 0 0 3px var(--color-accent-subtle);
 }
 
@@ -356,6 +369,55 @@ body {
   border-color: var(--text-primary);
 }
 
+/* Dossiers Hub Dropdown */
+.dossiers-dropdown-wrapper {
+  position: relative;
+}
+
+.dossiers-menu-dropdown {
+  position: absolute;
+  top: calc(100% + 6px);
+  right: 0;
+  width: 280px;
+  background: var(--bg-card);
+  border: 1px solid var(--border-glass);
+  border-radius: 16px;
+  box-shadow: var(--shadow-popup);
+  display: none;
+  z-index: 1200;
+  padding: 8px 0;
+}
+
+.dossiers-menu-dropdown.active {
+  display: block;
+}
+
+.dossier-menu-option {
+  padding: 10px 16px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  cursor: pointer;
+  transition: background 0.15s ease;
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--text-primary);
+}
+
+.dossier-menu-option:hover {
+  background: var(--bg-card-hover);
+}
+
+.dossier-count-badge {
+  font-size: 10px;
+  font-family: var(--font-mono);
+  padding: 2px 6px;
+  border-radius: var(--radius-pill);
+  background: var(--bg-card-subtle);
+  border: 1px solid var(--border-glass);
+  color: var(--text-muted);
+}
+
 /* Equalizer Bars for Audio */
 .audio-bars {
   display: inline-flex;
@@ -400,6 +462,7 @@ body {
   justify-content: center;
   cursor: pointer;
   transition: all 0.15s ease;
+  flex-shrink: 0;
 }
 
 .theme-toggle-btn:hover {
@@ -413,11 +476,11 @@ body {
    ========================================================================== */
 .cinematic-stage {
   flex: 1;
-  min-height: 0;
+  min-height: 0; /* CRITICAL: Prevents flex child from overflowing viewport */
   display: grid;
   grid-template-columns: 46% 54%;
-  gap: 20px;
-  padding: 14px 24px;
+  gap: 18px;
+  padding: 12px 20px;
   overflow: hidden;
   box-sizing: border-box;
 }
@@ -425,13 +488,14 @@ body {
 /* --- Left Column: The Story & Exhibition Slide --- */
 .slide-story-card {
   height: 100%;
+  min-height: 0; /* CRITICAL for internal flex scrolling */
   background: var(--bg-card);
   border: 1px solid var(--border-glass);
   border-radius: var(--radius-stage);
   box-shadow: var(--shadow-card);
   display: flex;
   flex-direction: column;
-  padding: 26px 28px;
+  padding: 24px 26px;
   overflow: hidden;
   position: relative;
   transition: background 0.25s ease, border-color 0.25s ease;
@@ -443,7 +507,7 @@ body {
   align-items: center;
   justify-content: space-between;
   gap: 12px;
-  margin-bottom: 10px;
+  margin-bottom: 8px;
   flex-shrink: 0;
 }
 
@@ -489,12 +553,12 @@ body {
 /* Headline Title */
 .slide-main-headline {
   font-family: var(--font-serif);
-  font-size: clamp(22px, 2.2vw, 32px);
+  font-size: clamp(20px, 2.1vw, 29px);
   font-weight: 600;
   letter-spacing: -0.015em;
   line-height: 1.25;
   color: var(--text-primary);
-  margin-bottom: 8px;
+  margin-bottom: 6px;
   flex-shrink: 0;
   transition: opacity 0.2s ease;
 }
@@ -503,11 +567,11 @@ body {
 .story-geography-bar {
   display: flex;
   align-items: center;
-  gap: 12px;
+  gap: 10px;
   font-size: 12px;
   color: var(--text-muted);
-  margin-bottom: 14px;
-  padding-bottom: 12px;
+  margin-bottom: 12px;
+  padding-bottom: 10px;
   border-bottom: 1px solid var(--border-subtle);
   flex-shrink: 0;
 }
@@ -520,13 +584,14 @@ body {
 
 /* Scrollable Narrative Body */
 .story-scroll-area {
-  flex: 1;
+  flex: 1 1 0;
+  min-height: 0; /* CRITICAL: Enables proper scrolling inside card without spill */
   overflow-y: auto;
   overflow-x: hidden;
   padding-right: 10px;
   display: flex;
   flex-direction: column;
-  gap: 16px;
+  gap: 14px;
   scrollbar-width: thin;
   scrollbar-color: var(--border-glass) transparent;
 }
@@ -544,7 +609,7 @@ body {
 
 /* Narrative Paragraph */
 .story-narrative-paragraph {
-  font-size: 15px;
+  font-size: 14.5px;
   line-height: 1.75;
   color: var(--text-secondary);
   transition: opacity 0.2s ease;
@@ -561,16 +626,16 @@ body {
   background: var(--bg-card-subtle);
   border-left: 3px solid var(--color-gold);
   border-radius: 0 12px 12px 0;
-  padding: 14px 18px;
+  padding: 12px 16px;
 }
 
 .quote-body-text {
   font-family: var(--font-serif);
-  font-size: 15px;
+  font-size: 14.5px;
   font-style: italic;
   line-height: 1.6;
   color: var(--text-primary);
-  margin-bottom: 6px;
+  margin-bottom: 4px;
 }
 
 .quote-author-cite {
@@ -581,14 +646,14 @@ body {
 
 /* Inline Dossier Jump Action */
 .dossier-inline-action {
-  margin: -4px 0 2px 0;
+  margin: -2px 0 2px 0;
 }
 
 .dossier-jump-btn {
   display: inline-flex;
   align-items: center;
   gap: 8px;
-  padding: 8px 16px;
+  padding: 7px 15px;
   border-radius: var(--radius-pill);
   background: var(--text-primary);
   color: var(--bg-card);
@@ -659,7 +724,7 @@ body {
 
 .reverberations-list li {
   font-size: 13px;
-  line-height: 1.6;
+  line-height: 1.55;
   color: var(--text-secondary);
   position: relative;
   padding-left: 18px;
@@ -676,6 +741,7 @@ body {
 /* --- Right Column: The Panoramic Cartography Viewport --- */
 .slide-map-card {
   height: 100%;
+  min-height: 0;
   background: var(--bg-card);
   border: 1px solid var(--border-glass);
   border-radius: var(--radius-stage);
@@ -688,14 +754,15 @@ body {
   width: 100%;
   height: 100%;
   z-index: 10;
+  background: #e5e7eb;
 }
 
 /* Floating Glass HUD Overlay on Map */
 .map-hud-top {
   position: absolute;
-  top: 16px;
-  left: 16px;
-  right: 16px;
+  top: 14px;
+  left: 14px;
+  right: 14px;
   display: flex;
   align-items: center;
   justify-content: space-between;
@@ -769,7 +836,7 @@ body {
   justify-content: center;
   cursor: pointer;
   box-shadow: 0 4px 20px rgba(0, 0, 0, 0.12);
-  z-index: 500;
+  z-index: 600;
   transition: all 0.2s ease;
 }
 
@@ -790,7 +857,7 @@ body {
   right: 18px;
 }
 
-/* Floating Bottom Map Legend */
+/* Floating Bottom Map Legend (Safely positioned without collision) */
 .map-hud-bottom {
   position: absolute;
   bottom: 16px;
@@ -814,7 +881,6 @@ body {
 
 /* ==========================================================================
    3. Bottom Panoramic Slide Scrubber & Timeline Bar (78px)
-   Horizontal Chapter Rail, 63 Milestone Pips & Tour Controller
    ========================================================================== */
 .cinematic-scrubber {
   height: 78px;
@@ -826,17 +892,19 @@ body {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 0 24px;
+  padding: 0 20px;
+  gap: 16px;
   z-index: 1000;
   user-select: none;
+  overflow: hidden;
 }
 
 /* Scrubber Left: Tour Play/Pause, Step Arrows, Counters */
 .scrubber-left {
   display: flex;
   align-items: center;
-  gap: 12px;
-  min-width: 240px;
+  gap: 10px;
+  flex-shrink: 0;
 }
 
 .tour-play-circle {
@@ -852,6 +920,7 @@ body {
   justify-content: center;
   box-shadow: 0 2px 10px rgba(0, 0, 0, 0.15);
   transition: transform 0.15s ease, background 0.15s ease;
+  flex-shrink: 0;
 }
 
 .tour-play-circle:hover {
@@ -870,6 +939,7 @@ body {
   justify-content: center;
   cursor: pointer;
   transition: all 0.15s ease;
+  flex-shrink: 0;
 }
 
 .tour-step-btn:hover {
@@ -888,6 +958,7 @@ body {
   font-weight: 700;
   color: var(--text-primary);
   line-height: 1.1;
+  white-space: nowrap;
 }
 
 .scrub-timer-display {
@@ -895,13 +966,13 @@ body {
   font-size: 10px;
   color: var(--text-muted);
   line-height: 1.2;
+  white-space: nowrap;
 }
 
 /* Scrubber Center: Chapter Pills & Horizontal 63-Milestone Scrub Rail */
 .scrubber-center {
   flex: 1;
-  max-width: 860px;
-  margin: 0 32px;
+  min-width: 0; /* CRITICAL: prevents overflow in flex */
   display: flex;
   flex-direction: column;
   gap: 8px;
@@ -912,6 +983,11 @@ body {
   align-items: center;
   justify-content: space-between;
   width: 100%;
+  overflow-x: auto;
+  scrollbar-width: none;
+}
+.chapter-ribbon-tabs::-webkit-scrollbar {
+  display: none;
 }
 
 .chapter-tab-pill {
@@ -923,6 +999,8 @@ body {
   cursor: pointer;
   transition: all 0.15s ease;
   white-space: nowrap;
+  background: transparent;
+  border: none;
 }
 
 .chapter-tab-pill:hover {
@@ -998,8 +1076,7 @@ body {
   display: flex;
   align-items: center;
   gap: 12px;
-  min-width: 220px;
-  justify-content: flex-end;
+  flex-shrink: 0;
 }
 
 .keyboard-hint-pill {
@@ -1008,6 +1085,7 @@ body {
   display: inline-flex;
   align-items: center;
   gap: 4px;
+  white-space: nowrap;
 }
 
 .keyboard-hint-pill kbd {
@@ -1349,14 +1427,18 @@ body {
 /* ==========================================================================
    Responsive Adaptations
    ========================================================================== */
-@media (max-width: 1100px) {
+@media (max-width: 1200px) {
   .cinematic-stage {
-    grid-template-columns: 50% 50%;
-    padding: 12px 16px;
+    grid-template-columns: 48% 52%;
+    gap: 14px;
+    padding: 10px 14px;
+  }
+  .brand-dates {
+    display: none;
   }
 }
 
-@media (max-width: 860px) {
+@media (max-width: 900px) {
   body {
     overflow-y: auto;
     height: auto;
@@ -1367,13 +1449,17 @@ body {
     overflow: visible;
   }
   .slide-story-card {
-    height: 480px;
+    height: 520px;
   }
   .slide-map-card {
-    height: 400px;
+    height: 420px;
   }
   .cinematic-scrubber {
     position: sticky;
     bottom: 0;
+  }
+  .chapter-ribbon-tabs {
+    justify-content: flex-start;
+    gap: 6px;
   }
 }
